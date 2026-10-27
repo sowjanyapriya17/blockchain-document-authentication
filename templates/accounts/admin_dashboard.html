@@ -1,0 +1,373 @@
+
+{% extends 'dashboard.html' %}
+
+{% block title %}Super Admin Dashboard | SecureDocs{% endblock %}
+
+{% block content %}
+
+<!-- Page Heading -->
+<div class="page-heading">
+    <div>
+        <h1>
+            Welcome back, {{ request.user.username }}!
+            <span>👋</span>
+        </h1>
+        <p>Monitor users, documents, and blockchain activity from one place.</p>
+    </div>
+
+    <div>
+        <div class="fw-semibold">
+            <i class="fa-regular fa-calendar me-2"></i>
+            {% now "F j, Y" %}
+        </div>
+        <small class="text-secondary">Super Administrator</small>
+    </div>
+</div>
+
+
+<!-- USER STATISTICS -->
+<div class="section-heading">
+    <h5><i class="fa-solid fa-users"></i> User Statistics</h5>
+</div>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon icon-blue">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-number">{{ total_users|default:0 }}</div>
+                </div>
+            </div>
+            <div class="stat-note">All registered accounts</div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon icon-orange">
+                    <i class="fa-solid fa-user-clock"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Pending Approvals</div>
+                    <div class="stat-number">{{ pending_users|default:0 }}</div>
+                </div>
+            </div>
+            <div class="stat-note">Accounts awaiting approval</div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon icon-green">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Approved Users</div>
+                    <div class="stat-number">{{ approved_users|default:0 }}</div>
+                </div>
+            </div>
+            <div class="stat-note">Approved system accounts</div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon icon-purple">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Total Issuers</div>
+                    <div class="stat-number">{{ total_issuers|default:0 }}</div>
+                </div>
+            </div>
+            <div class="stat-note">Users who issue documents</div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon icon-purple">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Total Verifiers</div>
+                    <div class="stat-number">{{ total_verifiers|default:0 }}</div>
+                </div>
+            </div>
+            <div class="stat-note">Users who verify documents</div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- DOCUMENT STATISTICS -->
+<div class="section-heading">
+    <h5><i class="fa-solid fa-file-lines"></i> Document Statistics</h5>
+</div>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-12 col-sm-6 col-xl-4">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon icon-blue">
+                    <i class="fa-solid fa-folder-open"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Total Documents</div>
+                    <div class="stat-number">{{ total_documents|default:0 }}</div>
+                </div>
+            </div>
+            <div class="stat-note">Documents stored in the system</div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-4">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon icon-green">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Active Documents</div>
+                    <div class="stat-number">{{ active_documents|default:0 }}</div>
+                </div>
+            </div>
+            <div class="stat-note">Documents marked active</div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-4">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon icon-orange">
+                    <i class="fa-solid fa-ban"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Revoked Documents</div>
+                    <div class="stat-number">{{ revoked_documents|default:0 }}</div>
+                </div>
+            </div>
+            <div class="stat-note">Documents marked revoked</div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-4">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon icon-orange">
+                    <i class="fa-solid fa-calendar-xmark"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Expired Documents</div>
+                    <div class="stat-number">{{ expired_documents|default:0 }}</div>
+                </div>
+            </div>
+            <div class="stat-note">Documents past their expiry date</div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-4">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon icon-purple">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Documents Without Confirmation</div>
+                    <div class="stat-number">{{ documents_without_confirmation|default:0 }}</div>
+                </div>
+            </div>
+            <div class="stat-note">Documents without confirmed blockchain records</div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- BLOCKCHAIN STATISTICS -->
+<div class="section-heading">
+    <h5><i class="fa-solid fa-link"></i> Blockchain Statistics</h5>
+</div>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon icon-green">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Confirmed Documents</div>
+                    <div class="stat-number">{{ confirmed_documents|default:0 }}</div>
+                </div>
+            </div>
+            <div class="stat-note">Documents with confirmed records</div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon icon-blue">
+                    <i class="fa-solid fa-database"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Blockchain Records</div>
+                    <div class="stat-number">{{ total_blockchain_records|default:0 }}</div>
+                </div>
+            </div>
+            <div class="stat-note">Total registration records</div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon icon-orange">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Pending Registrations</div>
+                    <div class="stat-number">{{ pending_registrations|default:0 }}</div>
+                </div>
+            </div>
+            <div class="stat-note">Awaiting blockchain confirmation</div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon icon-purple">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Failed Registrations</div>
+                    <div class="stat-number">{{ failed_registrations|default:0 }}</div>
+                </div>
+            </div>
+            <div class="stat-note">Registrations requiring attention</div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ADMINISTRATOR ACTIONS -->
+<div class="row g-3">
+
+    <div class="col-12 col-xl-7">
+
+        <div class="content-card h-100">
+
+            <div class="section-heading">
+                <h5><i class="fa-solid fa-bolt"></i> Quick Actions</h5>
+            </div>
+
+            <a href="{% url 'manage_users' %}" class="quick-action">
+                <div class="quick-action-icon icon-purple">
+                    <i class="fa-solid fa-users-gear"></i>
+                </div>
+                <div>
+                    <strong>Manage Users</strong>
+                    <small>Approve accounts and assign Issuer or Verifier roles.</small>
+                </div>
+                <i class="fa-solid fa-chevron-right action-arrow"></i>
+            </a>
+
+            <a href="{% url 'audit_logs' %}" class="quick-action">
+                <div class="quick-action-icon icon-blue">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+                <div>
+                    <strong>View Audit Logs</strong>
+                    <small>Review recorded system activities.</small>
+                </div>
+                <i class="fa-solid fa-chevron-right action-arrow"></i>
+            </a>
+
+            <a href="{% url 'profile' %}" class="quick-action">
+                <div class="quick-action-icon icon-green">
+                    <i class="fa-solid fa-user-gear"></i>
+                </div>
+                <div>
+                    <strong>My Profile</strong>
+                    <small>View your account information.</small>
+                </div>
+                <i class="fa-solid fa-chevron-right action-arrow"></i>
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-12 col-xl-5">
+
+        <div class="content-card h-100">
+
+            <div class="section-heading">
+                <h5><i class="fa-solid fa-shield-halved"></i> Role & Permissions</h5>
+            </div>
+
+            <div class="permission-box">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div class="stat-icon icon-blue">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+
+                    <div>
+                        <div class="permission-title">Super Administrator</div>
+                        <span class="role-badge">SUPERADMIN</span>
+                    </div>
+
+                </div>
+
+                <ul class="permission-list">
+                    <li>
+                        <i class="fa-solid fa-circle-check"></i>
+                        Manage user accounts and approvals
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-circle-check"></i>
+                        Monitor document statistics
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-circle-check"></i>
+                        Review blockchain registration status
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-circle-check"></i>
+                        View audit logs
+                    </li>
+                </ul>
+
+            </div>
+
+            <div class="blockchain-note">
+                <i class="fa-solid fa-lock me-2"></i>
+                Blockchain records support document integrity and traceability.
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

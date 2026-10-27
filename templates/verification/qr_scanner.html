@@ -1,0 +1,560 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+
+<style>
+    .qr-scanner-page {
+        max-width: 850px;
+        margin: 0 auto;
+        padding: 20px 0 35px;
+        color: #19365d;
+    }
+
+    .qr-page-heading {
+        margin-bottom: 22px;
+    }
+
+    .qr-page-heading h2 {
+        color: #0b2545;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .qr-page-heading p {
+        color: #718096;
+        font-size: 13px;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .qr-main-card {
+        background: #ffffff;
+        border: 1px solid #e3e9f1;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .qr-main-header {
+        padding: 17px 20px;
+        background: #f8faff;
+        border-bottom: 1px solid #e3e9f1;
+    }
+
+    .qr-main-header h4 {
+        color: #0b2545;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .qr-main-header p {
+        color: #718096;
+        font-size: 12px;
+        margin: 0;
+    }
+
+    .qr-main-body {
+        padding: 20px;
+    }
+
+    .qr-option-card {
+        height: 100%;
+        padding: 17px;
+        border: 1px solid #e3e9f1;
+        border-radius: 10px;
+        background: #ffffff;
+    }
+
+    .qr-option-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        margin-bottom: 13px;
+        border-radius: 9px;
+        background: #edf4ff;
+        color: #1677f9;
+        font-size: 18px;
+    }
+
+    .qr-option-card h5 {
+        color: #0b2545;
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .qr-option-description {
+        color: #718096;
+        font-size: 12px;
+        line-height: 1.7;
+        min-height: 40px;
+        margin-bottom: 16px;
+    }
+
+    .qr-reader-box {
+        width: 100%;
+        max-width: 350px;
+        margin: 0 auto 12px;
+        overflow: hidden;
+        border-radius: 8px;
+    }
+
+    .qr-file-label {
+        color: #405570;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 7px;
+    }
+
+    .qr-file-input {
+        min-height: 40px;
+        border: 1px solid #dce4ee;
+        border-radius: 7px;
+        font-size: 12px;
+    }
+
+    .qr-action-btn {
+        width: 100%;
+        min-height: 39px;
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .qr-message {
+        font-size: 12px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+        margin: 12px 0 0;
+    }
+
+    .qr-divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 22px 0;
+        color: #94a3b8;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .qr-divider::before,
+    .qr-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #e5eaf1;
+    }
+
+    .qr-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 22px;
+    }
+
+    .qr-security-note {
+        color: #718096;
+        font-size: 11px;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    @media (max-width: 576px) {
+        .qr-page-heading h2 {
+            font-size: 21px;
+        }
+
+        .qr-main-body {
+            padding: 13px;
+        }
+
+        .qr-option-card {
+            padding: 14px;
+        }
+
+        .qr-footer .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container-fluid qr-scanner-page">
+
+
+<!-- Page Heading -->
+<div class="qr-page-heading">
+    <h2>
+        <i class="fas fa-qrcode me-2"></i>
+        Scan or Upload QR Code
+    </h2>
+
+    <p>
+        Scan a document QR code using your camera or upload an existing
+        QR code image to open the document verification page.
+    </p>
+</div>
+
+<!-- Main Card -->
+<div class="qr-main-card">
+
+    <div class="qr-main-header">
+        <h4>
+            <i class="fas fa-shield-alt me-2"></i>
+            QR Code Verification
+        </h4>
+
+        <p>Choose a scanning method to continue.</p>
+    </div>
+
+    <div class="qr-main-body">
+
+        <!-- Camera Scanner -->
+        <div class="qr-option-card">
+
+            <div class="qr-option-icon">
+                <i class="fas fa-camera"></i>
+            </div>
+
+            <h5>Option 1: Scan Using Camera</h5>
+
+            <p class="qr-option-description">
+                Use your device camera to scan the QR code printed
+                on or attached to a document.
+            </p>
+
+            <div id="qr-reader" class="qr-reader-box"></div>
+
+            <p
+                id="camera-message"
+                class="qr-message text-danger"
+                role="status"
+                aria-live="polite">
+            </p>
+
+            <button
+                type="button"
+                id="start-camera-btn"
+                class="btn btn-primary qr-action-btn mt-2"
+                onclick="startScanner()">
+
+                <i class="fas fa-camera me-2"></i>
+                Start Camera Scanner
+
+            </button>
+
+            <button
+                type="button"
+                id="stop-camera-btn"
+                class="btn btn-outline-secondary qr-action-btn mt-2"
+                onclick="stopScanner()"
+                style="display: none;">
+
+                <i class="fas fa-stop me-2"></i>
+                Stop Camera
+
+            </button>
+
+        </div>
+
+        <!-- Divider -->
+        <div class="qr-divider">Or</div>
+
+        <!-- Upload QR Image -->
+        <div class="qr-option-card">
+
+            <div class="qr-option-icon">
+                <i class="fas fa-image"></i>
+            </div>
+
+            <h5>Option 2: Upload QR Code Image</h5>
+
+            <p class="qr-option-description">
+                Select a QR code image saved on your computer or
+                mobile device.
+            </p>
+
+            <div class="mb-3">
+
+                <label for="qr-file" class="form-label qr-file-label">
+                    Choose QR Code Image
+                </label>
+
+                <input
+                    type="file"
+                    id="qr-file"
+                    class="form-control qr-file-input"
+                    accept="image/png,image/jpeg,image/webp">
+
+                <small class="text-muted d-block mt-2" style="font-size: 11px;">
+                    Supported formats: PNG, JPG, JPEG and WebP.
+                </small>
+
+            </div>
+
+            <button
+                type="button"
+                id="read-image-btn"
+                class="btn btn-outline-primary qr-action-btn"
+                onclick="readQrImage()">
+
+                <i class="fas fa-upload me-2"></i>
+                Upload and Read QR Code
+
+            </button>
+
+            <p
+                id="upload-message"
+                class="qr-message text-danger"
+                role="status"
+                aria-live="polite">
+            </p>
+
+            <div id="qr-file-reader" class="mt-3"></div>
+
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="qr-footer">
+
+            <p class="qr-security-note">
+                <i class="fas fa-info-circle me-1"></i>
+                Scanning opens the verification page. Authenticity must
+                still be checked against the registered record.
+            </p>
+
+            <a
+                href="{% url 'verifier_dashboard' %}"
+                class="btn btn-outline-secondary btn-sm">
+
+                <i class="fas fa-arrow-left me-2"></i>
+                Back to Dashboard
+
+            </a>
+
+        </div>
+
+    </div>
+</div>
+```
+
+</div>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<script>
+    let cameraScanner = null;
+    let cameraStarting = false;
+    let imageScanner = null;
+    let imageReading = false;
+
+    function openVerificationPage(decodedText) {
+        let scannedUrl;
+
+        try {
+            scannedUrl = new URL(decodedText);
+        } catch (error) {
+            showQrError("The QR code does not contain a valid URL.");
+            return;
+        }
+
+        /*
+         * Accept only verification URLs from this website.
+         * Update this path if your Django URL pattern is different.
+         */
+        if (
+            scannedUrl.origin !== window.location.origin ||
+            !scannedUrl.pathname.startsWith("/verify/document/")
+        ) {
+            showQrError(
+                "This QR code is not a recognized document verification link."
+            );
+            return;
+        }
+
+        stopScanner().then(function () {
+            window.location.href = scannedUrl.href;
+        });
+    }
+
+    function showQrError(message) {
+        document.getElementById("camera-message").textContent = message;
+        document.getElementById("upload-message").textContent = message;
+    }
+
+    function startScanner() {
+        const message = document.getElementById("camera-message");
+        const startButton = document.getElementById("start-camera-btn");
+        const stopButton = document.getElementById("stop-camera-btn");
+
+        message.textContent = "";
+
+        if (typeof Html5Qrcode === "undefined") {
+            message.textContent =
+                "The QR scanner library could not be loaded. Check your internet connection.";
+            return;
+        }
+
+        if (cameraScanner !== null || cameraStarting) {
+            return;
+        }
+
+        cameraStarting = true;
+        startButton.disabled = true;
+
+        cameraScanner = new Html5Qrcode("qr-reader");
+
+        cameraScanner.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: { width: 220, height: 220 }
+            },
+
+            function (decodedText) {
+                openVerificationPage(decodedText);
+            },
+
+            function () {
+                // Ignore temporary scan failures.
+            }
+
+        ).then(function () {
+            cameraStarting = false;
+            startButton.style.display = "none";
+            startButton.disabled = false;
+            stopButton.style.display = "block";
+        }).catch(function (error) {
+            cameraScanner = null;
+            cameraStarting = false;
+
+            startButton.disabled = false;
+            stopButton.style.display = "none";
+
+            message.textContent =
+                "Unable to start the camera. Check camera permissions and try again.";
+
+            console.error("Camera scanner error:", error);
+        });
+    }
+
+    function stopScanner() {
+        const startButton = document.getElementById("start-camera-btn");
+        const stopButton = document.getElementById("stop-camera-btn");
+
+        if (cameraScanner === null) {
+            cameraStarting = false;
+            startButton.style.display = "block";
+            startButton.disabled = false;
+            stopButton.style.display = "none";
+            return Promise.resolve();
+        }
+
+        const scanner = cameraScanner;
+        cameraScanner = null;
+
+        return scanner.stop()
+            .catch(function (error) {
+                console.warn("Camera scanner stop error:", error);
+            })
+            .then(function () {
+                try {
+                    scanner.clear();
+                } catch (error) {
+                    // Scanner may already be cleared.
+                }
+
+                cameraStarting = false;
+                startButton.style.display = "block";
+                startButton.disabled = false;
+                stopButton.style.display = "none";
+            });
+    }
+
+    async function readQrImage() {
+        const fileInput = document.getElementById("qr-file");
+        const message = document.getElementById("upload-message");
+        const readButton = document.getElementById("read-image-btn");
+
+        message.textContent = "";
+
+        if (imageReading) {
+            return;
+        }
+
+        if (typeof Html5Qrcode === "undefined") {
+            message.textContent =
+                "The QR scanner library could not be loaded. Check your internet connection.";
+            return;
+        }
+
+        if (!fileInput.files.length) {
+            message.textContent = "Please select a QR code image first.";
+            return;
+        }
+
+        const file = fileInput.files[0];
+        const allowedTypes = [
+            "image/png",
+            "image/jpeg",
+            "image/webp"
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+            message.textContent =
+                "Please choose a PNG, JPG, JPEG or WebP image.";
+            return;
+        }
+
+        imageReading = true;
+        readButton.disabled = true;
+        readButton.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-2"></span>Reading QR Code...';
+
+        try {
+            if (imageScanner !== null) {
+                try {
+                    await imageScanner.clear();
+                } catch (error) {
+                    // Ignore cleanup errors.
+                }
+                imageScanner = null;
+            }
+
+            imageScanner = new Html5Qrcode("qr-file-reader");
+
+            const decodedText = await imageScanner.scanFile(file, true);
+
+            await imageScanner.clear();
+            imageScanner = null;
+
+            openVerificationPage(decodedText);
+
+        } catch (error) {
+            message.textContent =
+                "Could not read a QR code from this image. Choose a clear image containing a visible QR code.";
+
+            console.error("QR image reading error:", error);
+
+        } finally {
+            imageReading = false;
+            readButton.disabled = false;
+            readButton.innerHTML =
+                '<i class="fas fa-upload me-2"></i>Upload and Read QR Code';
+        }
+    }
+
+    window.addEventListener("beforeunload", function () {
+        if (cameraScanner !== null) {
+            cameraScanner.stop().catch(function () {});
+        }
+    });
+</script>
+
+{% endblock content %}

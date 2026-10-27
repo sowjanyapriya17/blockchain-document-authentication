@@ -1,0 +1,651 @@
+
+{% extends 'dashboard.html' %}
+
+{% block content %}
+
+<style>
+    .documents-page {
+        max-width: 1250px;
+        margin: 8px auto 35px;
+        color: #19365d;
+    }
+
+    /* Page Header */
+    .documents-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .documents-header h2 {
+        color: #0b2545;
+        font-size: 26px;
+        font-weight: 750;
+        margin-bottom: 7px;
+    }
+
+    .documents-header p {
+        color: #718096;
+        font-size: 13px;
+        margin: 0;
+        line-height: 1.7;
+    }
+
+    /* Buttons */
+    .documents-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 650;
+        text-decoration: none;
+        transition: all .2s ease;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .documents-btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-doc-primary {
+        color: #ffffff;
+        background: #1677f9;
+        border: 1px solid #1677f9;
+    }
+
+    .btn-doc-primary:hover {
+        color: #ffffff;
+        background: #0d63d5;
+        border-color: #0d63d5;
+    }
+
+    .btn-doc-dark {
+        color: #ffffff;
+        background: #0b2545;
+        border: 1px solid #0b2545;
+    }
+
+    .btn-doc-dark:hover {
+        color: #ffffff;
+        background: #123967;
+    }
+
+    .btn-doc-outline {
+        color: #52657d;
+        background: #ffffff;
+        border: 1px solid #d7e1ed;
+    }
+
+    .btn-doc-outline:hover {
+        color: #0b2545;
+        background: #f4f8fd;
+        border-color: #bdcde0;
+    }
+
+    /* Search Panel */
+    .documents-search-card {
+        padding: 19px;
+        margin-bottom: 22px;
+        background: #ffffff;
+        border: 1px solid #e5ebf3;
+        border-radius: 12px;
+        box-shadow: 0 3px 13px rgba(11, 37, 69, .035);
+    }
+
+    .search-heading {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: #0b2545;
+        font-size: 14px;
+        font-weight: 750;
+        margin-bottom: 13px;
+    }
+
+    .search-heading i {
+        color: #1677f9;
+    }
+
+    .documents-search-form {
+        display: flex;
+        align-items: stretch;
+        gap: 9px;
+    }
+
+    .documents-search-input {
+        flex: 1;
+        min-width: 0;
+        padding: 11px 13px;
+        color: #19365d;
+        background: #ffffff;
+        border: 1px solid #d7e1ed;
+        border-radius: 8px !important;
+        font-size: 13px;
+    }
+
+    .documents-search-input::placeholder {
+        color: #9aa8b9;
+    }
+
+    .documents-search-input:focus {
+        border-color: #1677f9;
+        box-shadow: 0 0 0 3px rgba(22, 119, 249, .1);
+        outline: none;
+    }
+
+    /* Document Table Card */
+    .documents-table-card {
+        background: #ffffff;
+        border: 1px solid #e5ebf3;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 3px 13px rgba(11, 37, 69, .035);
+    }
+
+    .documents-table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 18px 21px;
+        background: #ffffff;
+        border-bottom: 1px solid #edf1f6;
+    }
+
+    .table-heading-group {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+    .table-heading-icon {
+        width: 39px;
+        height: 39px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #1677f9;
+        background: #edf5ff;
+        border-radius: 9px;
+        font-size: 16px;
+    }
+
+    .documents-table-header h5 {
+        color: #0b2545;
+        font-size: 15px;
+        font-weight: 750;
+        margin: 0 0 4px;
+    }
+
+    .documents-table-header p {
+        color: #8492a6;
+        font-size: 11px;
+        margin: 0;
+    }
+
+    .documents-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 10px;
+        border-radius: 7px;
+        background: #f0f5fb;
+        color: #52657d;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .documents-table-body {
+        padding: 0;
+    }
+
+    .documents-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 12px;
+    }
+
+    .documents-table thead th {
+        padding: 14px 15px;
+        background: #f5f8fc;
+        color: #718096;
+        border-bottom: 1px solid #e5ebf3;
+        font-size: 10px;
+        font-weight: 750;
+        text-transform: uppercase;
+        letter-spacing: .45px;
+        white-space: nowrap;
+    }
+
+    .documents-table tbody td {
+        padding: 13px 15px;
+        color: #52657d;
+        border-bottom: 1px solid #edf1f6;
+        vertical-align: middle;
+        line-height: 1.6;
+    }
+
+    .documents-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .documents-table tbody tr {
+        transition: background .15s ease;
+    }
+
+    .documents-table tbody tr:hover {
+        background: #f8faff;
+    }
+
+    .document-id {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #1677f9;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+    .document-id i {
+        font-size: 12px;
+    }
+
+    .document-title {
+        color: #19365d;
+        font-size: 12px;
+        font-weight: 700;
+        min-width: 120px;
+        overflow-wrap: anywhere;
+    }
+
+    .document-type {
+        display: inline-block;
+        padding: 5px 8px;
+        color: #52657d;
+        background: #f0f4f9;
+        border-radius: 5px;
+        font-size: 10px;
+        font-weight: 650;
+        white-space: nowrap;
+    }
+
+    /* Status Badges */
+    .document-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 9px;
+        border-radius: 6px;
+        font-size: 10px;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+    .document-status-active {
+        color: #147a45;
+        background: #e6f7ed;
+    }
+
+    .document-status-revoked {
+        color: #b42332;
+        background: #fff0f0;
+    }
+
+    .document-status-other {
+        color: #52657d;
+        background: #edf1f6;
+    }
+
+    .document-date {
+        color: #52657d;
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    .document-view-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 7px 11px;
+        color: #1677f9;
+        background: #edf5ff;
+        border: 1px solid #d9e9ff;
+        border-radius: 7px;
+        font-size: 11px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all .2s ease;
+        white-space: nowrap;
+    }
+
+    .document-view-btn:hover {
+        color: #ffffff;
+        background: #1677f9;
+        border-color: #1677f9;
+    }
+
+    /* Empty State */
+    .documents-empty-state {
+        padding: 48px 20px !important;
+        text-align: center;
+    }
+
+    .empty-state-icon {
+        width: 58px;
+        height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        color: #8da4c1;
+        background: #f0f5fb;
+        border-radius: 15px;
+        font-size: 23px;
+    }
+
+    .documents-empty-state h5 {
+        color: #19365d;
+        font-size: 16px;
+        font-weight: 750;
+        margin-bottom: 8px;
+    }
+
+    .documents-empty-state p {
+        max-width: 380px;
+        margin: 0 auto 19px;
+        color: #8492a6;
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    /* Footer */
+    .documents-table-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px 18px;
+        background: #fbfcfe;
+        border-top: 1px solid #edf1f6;
+        color: #8492a6;
+        font-size: 11px;
+    }
+
+    @media (max-width: 768px) {
+        .documents-header h2 {
+            font-size: 22px;
+        }
+
+        .documents-header > a {
+            width: 100%;
+        }
+
+        .documents-search-card {
+            padding: 15px;
+        }
+
+        .documents-table-header {
+            padding: 15px;
+        }
+
+        .documents-table thead th,
+        .documents-table tbody td {
+            padding: 11px 12px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .documents-search-form {
+            flex-wrap: wrap;
+        }
+
+        .documents-search-input {
+            flex-basis: 100%;
+        }
+
+        .documents-search-form .documents-btn {
+            flex: 1;
+        }
+    }
+</style>
+
+<div class="container-fluid documents-page">
+
+    <!-- Page Header -->
+    <div class="documents-header">
+        <div>
+            <h2>
+                <i class="fas fa-folder-open me-2"></i>
+                My Documents
+            </h2>
+
+            <p>
+                Manage your documents, review their status, and access
+                blockchain registration details.
+            </p>
+        </div>
+
+        <a href="{% url 'create_document' %}"
+           class="documents-btn btn-doc-primary">
+            <i class="fas fa-plus"></i>
+            Add Document
+        </a>
+    </div>
+
+    <!-- Search Panel -->
+    <div class="documents-search-card">
+
+        <div class="search-heading">
+            <i class="fas fa-search"></i>
+            Search Documents
+        </div>
+
+        <form method="GET"
+              action="{% url 'search_documents' %}"
+              class="documents-search-form">
+
+            <input
+                type="text"
+                name="q"
+                value="{{ query|default:'' }}"
+                class="documents-search-input"
+                placeholder="Search by document ID or title..."
+                aria-label="Search documents">
+
+            <button type="submit" class="documents-btn btn-doc-dark">
+                <i class="fas fa-search"></i>
+                Search
+            </button>
+
+            <a href="{% url 'document_list' %}"
+               class="documents-btn btn-doc-outline">
+                <i class="fas fa-times"></i>
+                Clear
+            </a>
+
+        </form>
+    </div>
+
+    <!-- Document Records -->
+    <div class="documents-table-card">
+
+        <div class="documents-table-header">
+
+            <div class="table-heading-group">
+                <div class="table-heading-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+
+                <div>
+                    <h5>Document Records</h5>
+                    <p>View and manage your uploaded documents.</p>
+                </div>
+            </div>
+
+            {% if documents %}
+                <div class="documents-count">
+                    <i class="fas fa-folder"></i>
+                    {{ documents|length }} document{{ documents|length|pluralize }}
+                </div>
+            {% endif %}
+
+        </div>
+
+        <div class="documents-table-body">
+            <div class="table-responsive">
+
+                <table class="table documents-table">
+
+                    <thead>
+                        <tr>
+                            <th>Document ID</th>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Issue Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for document in documents %}
+
+                            <tr>
+
+                                <td>
+                                    <span class="document-id">
+                                        <i class="fas fa-file-shield"></i>
+                                        {{ document.document_id }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="document-title">
+                                        {{ document.title }}
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="document-type">
+                                        {{ document.get_document_type_display }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {% if document.status == 'ACTIVE' %}
+
+                                        <span class="document-status document-status-active">
+                                            <i class="fas fa-check-circle"></i>
+                                            {{ document.get_status_display }}
+                                        </span>
+
+                                    {% elif document.status == 'REVOKED' %}
+
+                                        <span class="document-status document-status-revoked">
+                                            <i class="fas fa-ban"></i>
+                                            {{ document.get_status_display }}
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="document-status document-status-other">
+                                            {{ document.get_status_display }}
+                                        </span>
+
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    <span class="document-date">
+                                        {{ document.issue_date|date:"d M Y"|default:"—" }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <a href="{% url 'document_detail' document.document_id %}"
+                                       class="document-view-btn">
+                                        <i class="fas fa-eye"></i>
+                                        View Details
+                                    </a>
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+                                <td colspan="6" class="documents-empty-state">
+
+                                    <div class="empty-state-icon">
+                                        <i class="fas fa-folder-open"></i>
+                                    </div>
+
+                                    <h5>No Documents Found</h5>
+
+                                    <p>
+                                        {% if query %}
+                                            No documents match your search.
+                                            Try another document ID or title.
+                                        {% else %}
+                                            You haven't uploaded any documents yet.
+                                            Upload your first document to begin managing
+                                            its versions and blockchain registration.
+                                        {% endif %}
+                                    </p>
+
+                                    {% if query %}
+                                        <a href="{% url 'document_list' %}"
+                                           class="documents-btn btn-doc-outline">
+                                            <i class="fas fa-list"></i>
+                                            View All Documents
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'create_document' %}"
+                                           class="documents-btn btn-doc-primary">
+                                            <i class="fas fa-cloud-arrow-up"></i>
+                                            Upload Your First Document
+                                        </a>
+                                    {% endif %}
+
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+        {% if documents %}
+            <div class="documents-table-footer">
+                <span>
+                    <i class="fas fa-shield-alt me-1"></i>
+                    SecureDocs Document Management
+                </span>
+
+                <span>
+                    Showing {{ documents|length }} document{{ documents|length|pluralize }}
+                </span>
+            </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

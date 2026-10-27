@@ -1,0 +1,352 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+
+<style>
+    .qr-page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 15px 0 30px;
+    }
+
+    .qr-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+    }
+
+    .qr-heading h2 {
+        color: #0b2545;
+        font-size: 23px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .qr-heading p {
+        color: #718096;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .qr-summary {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #ffffff;
+        border: 1px solid #e5eaf1;
+        border-radius: 9px;
+        padding: 12px 15px;
+        margin-bottom: 20px;
+    }
+
+    .qr-summary-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: #edf4ff;
+        color: #1677f9;
+        font-size: 18px;
+    }
+
+    .qr-count {
+        color: #0b2545;
+        font-size: 19px;
+        font-weight: 700;
+    }
+
+    .qr-count-label {
+        color: #718096;
+        font-size: 12px;
+    }
+
+    .qr-card {
+        height: 100%;
+        background: #ffffff;
+        border: 1px solid #e3e9f1;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: box-shadow 0.2s ease;
+    }
+
+    .qr-card:hover {
+        box-shadow: 0 5px 15px rgba(11, 37, 69, 0.07);
+    }
+
+    .qr-card-header {
+        background: #f8faff;
+        border-bottom: 1px solid #e9eef5;
+        padding: 13px 15px;
+    }
+
+    .qr-card-header h5 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0b2545;
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .qr-card-body {
+        padding: 15px;
+        text-align: center;
+    }
+
+    .qr-info {
+        text-align: left;
+        margin-bottom: 12px;
+    }
+
+    .qr-info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 5px 0;
+        border-bottom: 1px solid #f0f2f6;
+        font-size: 12px;
+    }
+
+    .qr-info-row:last-child {
+        border-bottom: none;
+    }
+
+    .qr-info-label {
+        color: #718096;
+    }
+
+    .qr-info-value {
+        color: #19365d;
+        font-weight: 600;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .qr-status {
+        display: inline-block;
+        padding: 5px 9px;
+        margin: 4px 0 12px;
+        background: #e8f7ee;
+        color: #187744;
+        border-radius: 5px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .qr-image-box {
+        width: 160px;
+        height: 160px;
+        padding: 8px;
+        margin: 0 auto 15px;
+        border: 1px solid #e5eaf1;
+        border-radius: 8px;
+        background: #ffffff;
+    }
+
+    .qr-image-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .qr-buttons {
+        display: grid;
+        gap: 8px;
+    }
+
+    .qr-buttons .btn {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 8px 10px;
+        border-radius: 6px;
+    }
+
+    .qr-empty {
+        padding: 35px 20px;
+        text-align: center;
+        background: #ffffff;
+        border: 1px dashed #cbd5e1;
+        border-radius: 10px;
+    }
+
+    .qr-empty i {
+        font-size: 35px;
+        color: #9aabc2;
+        margin-bottom: 12px;
+    }
+
+    .qr-empty h5 {
+        color: #0b2545;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .qr-empty p {
+        color: #718096;
+        font-size: 13px;
+        margin: 8px auto 16px;
+        max-width: 420px;
+    }
+
+    @media (max-width: 576px) {
+        .qr-heading h2 {
+            font-size: 20px;
+        }
+
+        .qr-heading .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container-fluid qr-page">
+
+```
+<!-- Heading -->
+<div class="qr-heading">
+    <div>
+        <h2>
+            <i class="fas fa-qrcode me-2"></i>Document QR Codes
+        </h2>
+        <p>
+            View and download QR codes for blockchain-confirmed documents.
+        </p>
+    </div>
+
+    <a href="{% url 'issuer_dashboard' %}"
+       class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-1"></i>
+        Back to Dashboard
+    </a>
+</div>
+
+<!-- Summary -->
+<div class="qr-summary">
+    <div class="qr-summary-icon">
+        <i class="fas fa-qrcode"></i>
+    </div>
+    <div>
+        <div class="qr-count">{{ qr_documents|length }}</div>
+        <div class="qr-count-label">Available QR Codes</div>
+    </div>
+</div>
+
+<!-- QR Cards -->
+<div class="row g-3">
+
+    {% for item in qr_documents %}
+
+    <div class="col-12 col-sm-6 col-lg-4">
+
+        <div class="qr-card">
+
+            <!-- Document Title -->
+            <div class="qr-card-header">
+                <h5>
+                    <i class="fas fa-file-alt me-2"></i>
+                    {{ item.document.title }}
+                </h5>
+            </div>
+
+            <div class="qr-card-body">
+
+                <!-- Document Information -->
+                <div class="qr-info">
+
+                    <div class="qr-info-row">
+                        <span class="qr-info-label">Document ID</span>
+                        <span class="qr-info-value">
+                            {{ item.document.document_id }}
+                        </span>
+                    </div>
+
+                    <div class="qr-info-row">
+                        <span class="qr-info-label">Document Type</span>
+                        <span class="qr-info-value">
+                            {{ item.document.get_document_type_display }}
+                        </span>
+                    </div>
+
+                    <div class="qr-info-row">
+                        <span class="qr-info-label">Version</span>
+                        <span class="qr-info-value">
+                            {{ item.blockchain_record.document_version.version_number }}
+                        </span>
+                    </div>
+
+                </div>
+
+                <!-- Blockchain Status -->
+                <div>
+                    <span class="qr-status">
+                        <i class="fas fa-check-circle me-1"></i>
+                        Blockchain Confirmed
+                    </span>
+                </div>
+
+                <!-- QR Image -->
+                <div class="qr-image-box">
+                    <img
+                        src="{{ item.qr_url }}"
+                        alt="QR code for {{ item.document.document_id }}"
+                        loading="lazy">
+                </div>
+
+                <!-- Buttons -->
+                <div class="qr-buttons">
+
+                    <a href="{{ item.qr_url }}"
+                       download="document_{{ item.document.document_id }}_qr.png"
+                       class="btn btn-primary">
+                        <i class="fas fa-download me-2"></i>
+                        Download QR Code
+                    </a>
+
+                    <a href="{% url 'document_detail' item.document.document_id %}"
+                       class="btn btn-outline-secondary">
+                        <i class="fas fa-eye me-2"></i>
+                        View Document Details
+                    </a>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <!-- Empty State -->
+    <div class="col-12">
+        <div class="qr-empty">
+            <i class="fas fa-qrcode d-block"></i>
+
+            <h5>No QR Codes Available</h5>
+
+            <p>
+                QR codes will appear here after your document versions
+                have been successfully registered and confirmed on the blockchain.
+            </p>
+
+            <a href="{% url 'document_list' %}"
+               class="btn btn-primary btn-sm">
+                <i class="fas fa-file-alt me-1"></i>
+                View My Documents
+            </a>
+        </div>
+    </div>
+
+    {% endfor %}
+
+</div>
+
+
+</div>
+
+{% endblock %}

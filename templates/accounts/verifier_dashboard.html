@@ -1,0 +1,522 @@
+
+{% extends 'dashboard.html' %}
+
+{% block content %}
+
+<style>
+    /* Verifier Dashboard */
+    .verifier-dashboard {
+        padding: 8px 0 24px;
+        color: #19365d;
+    }
+
+    .verifier-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+
+    .verifier-header h2 {
+        font-size: 26px;
+        font-weight: 700;
+        color: #0b2545;
+        margin-bottom: 6px;
+    }
+
+    .verifier-header p {
+        font-size: 14px;
+        color: #718096;
+        margin: 0;
+    }
+
+    .verifier-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 14px;
+        border-radius: 8px;
+        background: #edf5ff;
+        color: #1769c2;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .4px;
+    }
+
+    /* Statistics */
+    .verifier-stat-card {
+        height: 100%;
+        padding: 18px;
+        background: #ffffff;
+        border: 1px solid #e7edf5;
+        border-radius: 12px;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .verifier-stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(11, 37, 69, .07);
+    }
+
+    .verifier-stat-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .verifier-stat-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #718096;
+        margin: 0;
+    }
+
+    .verifier-stat-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        font-size: 17px;
+    }
+
+    .stat-blue {
+        background: #edf5ff;
+        color: #1677f9;
+    }
+
+    .stat-green {
+        background: #e9f9f0;
+        color: #198754;
+    }
+
+    .stat-red {
+        background: #fff0f0;
+        color: #dc3545;
+    }
+
+    .verifier-stat-number {
+        font-size: 28px;
+        font-weight: 750;
+        line-height: 1.2;
+        color: #0b2545;
+        margin: 0;
+    }
+
+    .verifier-stat-number.success {
+        color: #198754;
+    }
+
+    .verifier-stat-number.failed {
+        color: #dc3545;
+    }
+
+    .verifier-stat-note {
+        margin-top: 7px;
+        font-size: 12px;
+        color: #8a98aa;
+    }
+
+    /* Section Heading */
+    .verifier-section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 30px 0 16px;
+    }
+
+    .verifier-section-heading h4 {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0b2545;
+        margin: 0;
+    }
+
+    .verifier-section-heading p {
+        font-size: 13px;
+        color: #718096;
+        margin: 5px 0 0;
+    }
+
+    /* Action Cards */
+    .verifier-action-card {
+        height: 100%;
+        padding: 22px;
+        background: #ffffff;
+        border: 1px solid #e7edf5;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        transition: transform .2s ease, box-shadow .2s ease,
+                    border-color .2s ease;
+    }
+
+    .verifier-action-card:hover {
+        transform: translateY(-3px);
+        border-color: #cbdcf2;
+        box-shadow: 0 8px 24px rgba(11, 37, 69, .07);
+    }
+
+    .verifier-action-icon {
+        width: 46px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        font-size: 19px;
+        margin-bottom: 17px;
+    }
+
+    .action-blue {
+        background: #edf5ff;
+        color: #1677f9;
+    }
+
+    .action-green {
+        background: #e9f9f0;
+        color: #198754;
+    }
+
+    .action-purple {
+        background: #f2edff;
+        color: #7653d6;
+    }
+
+    .action-orange {
+        background: #fff3e6;
+        color: #d97706;
+    }
+
+    .verifier-action-card h5 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0b2545;
+        margin-bottom: 9px;
+    }
+
+    .verifier-action-card p {
+        color: #718096;
+        font-size: 13px;
+        line-height: 1.7;
+        margin-bottom: 20px;
+        flex-grow: 1;
+    }
+
+    .verifier-action-btn {
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all .2s ease;
+    }
+
+    .btn-verifier-primary {
+        color: #ffffff;
+        background: #1677f9;
+        border: 1px solid #1677f9;
+    }
+
+    .btn-verifier-primary:hover {
+        color: #ffffff;
+        background: #0d63d5;
+        border-color: #0d63d5;
+    }
+
+    .btn-verifier-success {
+        color: #ffffff;
+        background: #198754;
+        border: 1px solid #198754;
+    }
+
+    .btn-verifier-success:hover {
+        color: #ffffff;
+        background: #146c43;
+        border-color: #146c43;
+    }
+
+    .btn-verifier-outline {
+        color: #19365d;
+        background: #ffffff;
+        border: 1px solid #d8e1ed;
+    }
+
+    .btn-verifier-outline:hover {
+        color: #1677f9;
+        background: #f5f9ff;
+        border-color: #1677f9;
+    }
+
+    /* Information Panel */
+    .verifier-info-panel {
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        padding: 17px 19px;
+        margin-top: 24px;
+        border: 1px solid #dceaff;
+        background: #f5f9ff;
+        border-radius: 10px;
+    }
+
+    .verifier-info-icon {
+        color: #1677f9;
+        font-size: 18px;
+        margin-top: 2px;
+    }
+
+    .verifier-info-panel h6 {
+        font-size: 13px;
+        font-weight: 700;
+        color: #0b2545;
+        margin-bottom: 5px;
+    }
+
+    .verifier-info-panel p {
+        font-size: 12px;
+        line-height: 1.7;
+        color: #62758c;
+        margin: 0;
+    }
+
+    @media (max-width: 576px) {
+        .verifier-header h2 {
+            font-size: 22px;
+        }
+
+        .verifier-stat-card {
+            padding: 15px;
+        }
+
+        .verifier-stat-number {
+            font-size: 24px;
+        }
+
+        .verifier-action-card {
+            padding: 18px;
+        }
+    }
+</style>
+
+<div class="container-fluid verifier-dashboard">
+
+    <!-- Dashboard Header -->
+    <div class="verifier-header">
+        <div>
+            <h2>Verifier Dashboard</h2>
+            <p>Verify document authenticity and review blockchain verification records.</p>
+        </div>
+
+        <div class="verifier-badge">
+            <i class="fas fa-shield-alt"></i>
+            DOCUMENT VERIFIER
+        </div>
+    </div>
+
+    <!-- Verification Statistics -->
+    <div class="row g-3">
+
+        <div class="col-12 col-md-4">
+            <div class="verifier-stat-card">
+                <div class="verifier-stat-top">
+                    <p class="verifier-stat-label">Total Verifications</p>
+                    <div class="verifier-stat-icon stat-blue">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                </div>
+
+                <h3 class="verifier-stat-number">
+                    {{ total_verifications|default:0 }}
+                </h3>
+
+                <div class="verifier-stat-note">
+                    All verification attempts
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="verifier-stat-card">
+                <div class="verifier-stat-top">
+                    <p class="verifier-stat-label">Successful Verifications</p>
+                    <div class="verifier-stat-icon stat-green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+
+                <h3 class="verifier-stat-number success">
+                    {{ successful_verifications|default:0 }}
+                </h3>
+
+                <div class="verifier-stat-note">
+                    Documents verified successfully
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="verifier-stat-card">
+                <div class="verifier-stat-top">
+                    <p class="verifier-stat-label">Failed Verifications</p>
+                    <div class="verifier-stat-icon stat-red">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                </div>
+
+                <h3 class="verifier-stat-number failed">
+                    {{ failed_verifications|default:0 }}
+                </h3>
+
+                <div class="verifier-stat-note">
+                    Unsuccessful verification attempts
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Verification Tools -->
+    <div class="verifier-section-heading">
+        <div>
+            <h4>Verification Tools</h4>
+            <p>Select a method to verify a document or review previous activity.</p>
+        </div>
+    </div>
+
+    <div class="row g-3">
+
+        <!-- Verify by Document ID -->
+        <div class="col-12 col-md-6">
+            <div class="verifier-action-card">
+
+                <div class="verifier-action-icon action-blue">
+                    <i class="fas fa-file-circle-check"></i>
+                </div>
+
+                <h5>Verify by Document ID</h5>
+
+                <p>
+                    Enter a document ID and upload the certificate to check
+                    its authenticity, blockchain record, expiry, and revocation status.
+                </p>
+
+                <a href="{% url 'verify_home' %}"
+                   class="verifier-action-btn btn-verifier-primary">
+                    <i class="fas fa-search"></i>
+                    Verify Document
+                    <i class="fas fa-arrow-right ms-auto"></i>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- Verify by QR Code -->
+        <div class="col-12 col-md-6">
+            <div class="verifier-action-card">
+
+                <div class="verifier-action-icon action-green">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+
+                <h5>Verify by QR Code</h5>
+
+                <p>
+                    Scan or upload the QR code associated with a certificate
+                    to access its verification page quickly.
+                </p>
+
+                <a href="{% url 'qr_scanner' %}"
+                   class="verifier-action-btn btn-verifier-success">
+                    <i class="fas fa-camera"></i>
+                    Scan QR Code
+                    <i class="fas fa-arrow-right ms-auto"></i>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- Verification History -->
+        <div class="col-12 col-md-6">
+            <div class="verifier-action-card">
+
+                <div class="verifier-action-icon action-purple">
+                    <i class="fas fa-history"></i>
+                </div>
+
+                <h5>Verification History</h5>
+
+                <p>
+                    Review previous verification attempts and check their
+                    recorded results, including successful and failed checks.
+                </p>
+
+                <a href="{% url 'verification_records' %}"
+                   class="verifier-action-btn btn-verifier-outline">
+                    <i class="fas fa-list-check"></i>
+                    View History
+                    <i class="fas fa-arrow-right ms-auto"></i>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- Verification Records -->
+        <div class="col-12 col-md-6">
+            <div class="verifier-action-card">
+
+                <div class="verifier-action-icon action-orange">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+
+                <h5>Verification Statistics</h5>
+
+                <p>
+                    Review verification records to monitor your document
+                    checking activity and understand past verification outcomes.
+                </p>
+
+                <a href="{% url 'verification_history' %}"
+                   class="verifier-action-btn btn-verifier-outline">
+                    <i class="fas fa-chart-column"></i>
+                    View Verification Records
+                    <i class="fas fa-arrow-right ms-auto"></i>
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Security Information -->
+    <div class="verifier-info-panel">
+        <div class="verifier-info-icon">
+            <i class="fas fa-lock"></i>
+        </div>
+
+        <div>
+            <h6>Secure Document Verification</h6>
+            <p>
+                Verification checks compare the uploaded document's SHA-256 hash
+                with its registered blockchain record. Always review the displayed
+                result and document status before accepting a document as authentic.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+

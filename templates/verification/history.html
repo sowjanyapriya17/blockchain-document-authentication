@@ -1,0 +1,634 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+
+<style>
+    .verification-page {
+        max-width: 1250px;
+        margin: 0 auto;
+        padding: 15px 0 30px;
+        color: #19365d;
+    }
+
+    .verification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 22px;
+    }
+
+    .verification-title {
+        color: #0b2545;
+        font-size: 23px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .verification-subtitle {
+        color: #718096;
+        font-size: 13px;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .verification-card {
+        background: #ffffff;
+        border: 1px solid #e4eaf2;
+        border-radius: 10px;
+        margin-bottom: 18px;
+        overflow: hidden;
+    }
+
+    .verification-card-header {
+        padding: 14px 17px;
+        background: #f8faff;
+        border-bottom: 1px solid #e4eaf2;
+    }
+
+    .verification-card-header h5 {
+        color: #0b2545;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .verification-card-body {
+        padding: 17px;
+    }
+
+    .verification-filter-label {
+        color: #405570;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .verification-filter .form-control,
+    .verification-filter .form-select {
+        min-height: 39px;
+        border-color: #dce4ee;
+        border-radius: 6px;
+        font-size: 13px;
+        box-shadow: none;
+    }
+
+    .verification-filter .form-control:focus,
+    .verification-filter .form-select:focus {
+        border-color: #1677f9;
+        box-shadow: 0 0 0 3px rgba(22, 119, 249, 0.1);
+    }
+
+    .verification-filter-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .verification-filter-actions .btn {
+        min-height: 39px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .verification-table {
+        margin-bottom: 0;
+        vertical-align: middle;
+        font-size: 12px;
+    }
+
+    .verification-table thead th {
+        padding: 12px 10px;
+        background: #f1f5fa;
+        color: #405570;
+        border-bottom: 1px solid #e1e8f0;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.35px;
+        white-space: nowrap;
+    }
+
+    .verification-table tbody td {
+        padding: 11px 10px;
+        color: #405570;
+        border-color: #edf1f6;
+    }
+
+    .verification-table tbody tr:hover {
+        background: #f8faff;
+    }
+
+    .verification-document-id {
+        color: #1677f9;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .verification-document-title {
+        color: #19365d;
+        font-weight: 600;
+        min-width: 120px;
+    }
+
+    .verification-method {
+        display: inline-block;
+        padding: 4px 7px;
+        background: #edf4ff;
+        color: #245ba8;
+        border-radius: 5px;
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    .verification-result {
+        display: inline-block;
+        padding: 5px 8px;
+        border-radius: 5px;
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .result-valid {
+        color: #187744;
+        background: #e8f7ee;
+    }
+
+    .result-invalid {
+        color: #b42318;
+        background: #fdeceb;
+    }
+
+    .result-warning {
+        color: #946200;
+        background: #fff4d6;
+    }
+
+    .verification-hash {
+        display: block;
+        max-width: 175px;
+        color: #64748b;
+        font-family: Consolas, monospace;
+        font-size: 10px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .verification-id {
+        display: block;
+        max-width: 125px;
+        color: #64748b;
+        font-family: Consolas, monospace;
+        font-size: 10px;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .verification-empty {
+        padding: 35px 18px;
+        text-align: center;
+    }
+
+    .verification-empty-icon {
+        width: 55px;
+        height: 55px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto 13px;
+        color: #1677f9;
+        background: #edf4ff;
+        border-radius: 50%;
+        font-size: 22px;
+    }
+
+    .verification-empty h5 {
+        color: #0b2545;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .verification-empty p {
+        color: #718096;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .verification-pagination {
+        padding: 15px;
+        border-top: 1px solid #edf1f6;
+    }
+
+    .verification-pagination .pagination {
+        margin: 0;
+    }
+
+    .verification-pagination .page-link {
+        color: #1677f9;
+        border-color: #e1e8f0;
+        font-size: 12px;
+        padding: 7px 12px;
+    }
+
+    .verification-pagination .page-item.active .page-link {
+        color: #ffffff;
+        background: #1677f9;
+        border-color: #1677f9;
+    }
+
+    .verification-pagination .page-item.disabled .page-link {
+        color: #718096;
+        background: #f8faff;
+    }
+
+    .verification-table-footer {
+        padding: 10px 15px;
+        background: #fbfcfe;
+        border-top: 1px solid #edf1f6;
+        color: #718096;
+        font-size: 11px;
+    }
+
+    @media (max-width: 576px) {
+        .verification-title {
+            font-size: 20px;
+        }
+
+        .verification-card-body {
+            padding: 13px;
+        }
+
+        .verification-filter-actions {
+            width: 100%;
+        }
+
+        .verification-filter-actions .btn {
+            flex: 1;
+        }
+    }
+</style>
+
+<div class="container-fluid verification-page">
+
+```
+<!-- Page Heading -->
+<div class="verification-header">
+    <div>
+        <h2 class="verification-title">
+            <i class="fas fa-history me-2"></i>
+            Verification History
+        </h2>
+
+        <p class="verification-subtitle">
+            Review previous document verification attempts, results,
+            and associated hash information.
+        </p>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="verification-card">
+
+    <div class="verification-card-header">
+        <h5>
+            <i class="fas fa-filter me-2"></i>
+            Search and Filter Records
+        </h5>
+    </div>
+
+    <div class="verification-card-body">
+
+        <form method="get" class="verification-filter">
+
+            <div class="row g-3 align-items-end">
+
+                <div class="col-12 col-md-6">
+                    <label for="q" class="form-label verification-filter-label">
+                        Search Document
+                    </label>
+
+                    <input
+                        type="text"
+                        name="q"
+                        id="q"
+                        class="form-control"
+                        placeholder="Enter document ID or title"
+                        value="{{ query|default:'' }}">
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label for="result" class="form-label verification-filter-label">
+                        Verification Result
+                    </label>
+
+                    <select name="result" id="result" class="form-select">
+
+                        <option value="">All Results</option>
+
+                        {% for item in allowed_results %}
+                            <option
+                                value="{{ item }}"
+                                {% if selected_result == item %}selected{% endif %}>
+                                {{ item }}
+                            </option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <div class="verification-filter-actions">
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search me-1"></i>
+                            Filter
+                        </button>
+
+                        <a href="{{ request.path }}"
+                           class="btn btn-outline-secondary"
+                           title="Clear filters"
+                           aria-label="Clear filters">
+                            <i class="fas fa-times"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<!-- Verification Records -->
+<div class="verification-card mb-0">
+
+    <div class="verification-card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+        <h5>
+            <i class="fas fa-list-alt me-2"></i>
+            Verification Records
+        </h5>
+
+        <span class="text-muted small">
+            {% if page_obj %}
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            {% else %}
+                No records
+            {% endif %}
+        </span>
+
+    </div>
+
+    {% if page_obj %}
+
+        {% if page_obj.object_list %}
+
+            <div class="table-responsive">
+
+                <table class="table verification-table">
+
+                    <thead>
+                        <tr>
+                            <th>Document ID</th>
+                            <th>Document Title</th>
+                            <th>Method</th>
+                            <th>Result</th>
+                            <th>Uploaded Hash</th>
+                            <th>Blockchain Hash</th>
+                            <th>Verification ID</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in page_obj %}
+
+                            <tr>
+
+                                <!-- Document ID -->
+                                <td>
+                                    {% if item.document %}
+                                        <span class="verification-document-id">
+                                            {{ item.document.document_id }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- Document Title -->
+                                <td>
+                                    {% if item.document %}
+                                        <span class="verification-document-title">
+                                            {{ item.document.title }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted">
+                                            Unknown document
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- Verification Method -->
+                                <td>
+                                    <span class="verification-method">
+                                        {{ item.method|default:"—" }}
+                                    </span>
+                                </td>
+
+                                <!-- Verification Result -->
+                                <td>
+                                    {% if item.result == 'VALID' %}
+
+                                        <span class="verification-result result-valid">
+                                            <i class="fas fa-check-circle me-1"></i>
+                                            VALID
+                                        </span>
+
+                                    {% elif item.result == 'INVALID' or item.result == 'REVOKED' or item.result == 'EXPIRED' %}
+
+                                        <span class="verification-result result-invalid">
+                                            <i class="fas fa-times-circle me-1"></i>
+                                            {{ item.result }}
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="verification-result result-warning">
+                                            <i class="fas fa-exclamation-circle me-1"></i>
+                                            {{ item.result|default:"UNKNOWN" }}
+                                        </span>
+
+                                    {% endif %}
+                                </td>
+
+                                <!-- Uploaded File Hash -->
+                                <td>
+                                    <span class="verification-hash"
+                                          title="{{ item.generated_hash|default:'—' }}">
+                                        {{ item.generated_hash|default:"—" }}
+                                    </span>
+                                </td>
+
+                                <!-- Blockchain Hash -->
+                                <td>
+                                    <span class="verification-hash"
+                                          title="{{ item.blockchain_hash|default:'—' }}">
+                                        {{ item.blockchain_hash|default:"—" }}
+                                    </span>
+                                </td>
+
+                                <!-- Verification ID -->
+                                <td>
+                                    <span class="verification-id">
+                                        {{ item.verification_id|default:"—" }}
+                                    </span>
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="verification-empty">
+
+                <div class="verification-empty-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+
+                <h5>No Matching Records Found</h5>
+
+                <p>
+                    No verification records match your current search or filter.
+                    Try different search terms or clear the filters.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+        <!-- Pagination -->
+        {% if page_obj.paginator.num_pages > 1 %}
+
+            <div class="verification-pagination">
+
+                <nav aria-label="Verification history pagination">
+
+                    <ul class="pagination justify-content-center flex-wrap">
+
+                        {% if page_obj.has_previous %}
+
+                            <li class="page-item">
+                                <a
+                                    class="page-link"
+                                    href="?q={{ query|urlencode }}&amp;result={{ selected_result|urlencode }}&amp;page=1">
+                                    First
+                                </a>
+                            </li>
+
+                            <li class="page-item">
+                                <a
+                                    class="page-link"
+                                    href="?q={{ query|urlencode }}&amp;result={{ selected_result|urlencode }}&amp;page={{ page_obj.previous_page_number }}">
+                                    Previous
+                                </a>
+                            </li>
+
+                        {% else %}
+
+                            <li class="page-item disabled">
+                                <span class="page-link">First</span>
+                            </li>
+
+                            <li class="page-item disabled">
+                                <span class="page-link">Previous</span>
+                            </li>
+
+                        {% endif %}
+
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+
+                        {% if page_obj.has_next %}
+
+                            <li class="page-item">
+                                <a
+                                    class="page-link"
+                                    href="?q={{ query|urlencode }}&amp;result={{ selected_result|urlencode }}&amp;page={{ page_obj.next_page_number }}">
+                                    Next
+                                </a>
+                            </li>
+
+                            <li class="page-item">
+                                <a
+                                    class="page-link"
+                                    href="?q={{ query|urlencode }}&amp;result={{ selected_result|urlencode }}&amp;page={{ page_obj.paginator.num_pages }}">
+                                    Last
+                                </a>
+                            </li>
+
+                        {% else %}
+
+                            <li class="page-item disabled">
+                                <span class="page-link">Next</span>
+                            </li>
+
+                            <li class="page-item disabled">
+                                <span class="page-link">Last</span>
+                            </li>
+
+                        {% endif %}
+
+                    </ul>
+
+                </nav>
+
+            </div>
+
+        {% endif %}
+
+        <div class="verification-table-footer">
+            <i class="fas fa-info-circle me-1"></i>
+            Verification history shows recorded attempts and their stored results.
+        </div>
+
+    {% else %}
+
+        <div class="verification-empty">
+
+            <div class="verification-empty-icon">
+                <i class="fas fa-history"></i>
+            </div>
+
+            <h5>No Verification History Available</h5>
+
+            <p>
+                Verification records will appear here after document verification attempts
+                have been recorded.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+</div>
+
+{% endblock %}

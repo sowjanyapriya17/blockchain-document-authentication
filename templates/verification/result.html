@@ -1,0 +1,601 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+
+<style>
+    .verification-result-page {
+        max-width: 850px;
+        margin: 0 auto;
+        padding: 22px 0 35px;
+        color: #19365d;
+    }
+
+    .result-page-heading {
+        margin-bottom: 20px;
+    }
+
+    .result-page-heading h2 {
+        color: #0b2545;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .result-page-heading p {
+        color: #718096;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .result-main-card {
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+    }
+
+    .result-card-header {
+        padding: 17px 20px;
+        background: #f8faff;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .result-card-header h4 {
+        color: #0b2545;
+        font-size: 16px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .result-card-body {
+        padding: 22px;
+    }
+
+    .result-status {
+        padding: 22px 16px;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        text-align: center;
+        margin-bottom: 22px;
+    }
+
+    .result-status-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 12px;
+        border-radius: 50%;
+        font-size: 22px;
+    }
+
+    .result-status h3 {
+        font-size: 19px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .result-status p {
+        max-width: 580px;
+        margin: 0 auto;
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    .result-status-valid {
+        color: #176b43;
+        background: #edf9f1;
+        border-color: #ccebd7;
+    }
+
+    .result-status-valid .result-status-icon {
+        background: #d5f2df;
+        color: #187747;
+    }
+
+    .result-status-invalid,
+    .result-status-error {
+        color: #a52b2b;
+        background: #fff1f1;
+        border-color: #f4d0d0;
+    }
+
+    .result-status-invalid .result-status-icon,
+    .result-status-error .result-status-icon {
+        background: #fce0e0;
+        color: #b42318;
+    }
+
+    .result-status-warning {
+        color: #855b0c;
+        background: #fff8e7;
+        border-color: #f3e2b6;
+    }
+
+    .result-status-warning .result-status-icon {
+        background: #ffedbd;
+        color: #946200;
+    }
+
+    .result-status-neutral {
+        color: #475569;
+        background: #f3f6fa;
+        border-color: #e1e7ef;
+    }
+
+    .result-status-neutral .result-status-icon {
+        background: #e4eaf2;
+        color: #526173;
+    }
+
+    .result-section {
+        margin-top: 24px;
+    }
+
+    .result-section-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: #0b2545;
+        font-size: 14px;
+        font-weight: 700;
+        padding-bottom: 12px;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #e8edf4;
+    }
+
+    .result-info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .result-info-item {
+        min-width: 0;
+        padding: 13px;
+        border: 1px solid #e5ebf3;
+        border-radius: 8px;
+        background: #ffffff;
+    }
+
+    .result-info-label {
+        display: block;
+        color: #718096;
+        font-size: 11px;
+        margin-bottom: 6px;
+    }
+
+    .result-info-value {
+        display: block;
+        color: #19365d;
+        font-size: 13px;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    .result-hash-box {
+        padding: 13px;
+        border: 1px solid #dfe7f1;
+        border-radius: 8px;
+        background: #f7f9fc;
+    }
+
+    .result-hash-label {
+        display: block;
+        color: #718096;
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+
+    .result-hash-value {
+        color: #34516f;
+        font-family: Consolas, monospace;
+        font-size: 12px;
+        line-height: 1.8;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        margin: 0;
+    }
+
+    .result-message {
+        border-radius: 8px;
+        font-size: 12px;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+
+    .result-actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #e8edf4;
+    }
+
+    .result-actions .btn {
+        min-height: 39px;
+        padding: 10px 16px;
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .result-disclaimer {
+        margin-top: 16px;
+        color: #718096;
+        font-size: 11px;
+        line-height: 1.7;
+        text-align: center;
+    }
+
+    @media (max-width: 576px) {
+        .verification-result-page {
+            padding-top: 12px;
+        }
+
+        .result-page-heading h2 {
+            font-size: 21px;
+        }
+
+        .result-card-body {
+            padding: 15px;
+        }
+
+        .result-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .result-actions {
+            flex-direction: column;
+        }
+
+        .result-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container-fluid verification-result-page">
+
+<!-- Page Heading -->
+<div class="result-page-heading">
+    <h2>
+        <i class="fas fa-shield-alt me-2"></i>
+        Document Verification Result
+    </h2>
+
+    <p>
+        Review the verification outcome and the available document details.
+    </p>
+</div>
+
+<div class="result-main-card">
+
+    <!-- Card Header -->
+    <div class="result-card-header">
+        <h4>
+            <i class="fas fa-clipboard-check me-2"></i>
+            Verification Summary
+        </h4>
+    </div>
+
+    <div class="result-card-body">
+
+        <!-- VALID -->
+        {% if result == 'VALID' %}
+
+            <div class="result-status result-status-valid">
+
+                <div class="result-status-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+
+                <h3>Document Verified Successfully</h3>
+
+                <p>
+                    The uploaded file's SHA-256 hash matches the registered
+                    blockchain record, and the verification checks returned
+                    a valid result.
+                </p>
+
+            </div>
+
+        <!-- INVALID -->
+        {% elif result == 'INVALID' %}
+
+            <div class="result-status result-status-invalid">
+
+                <div class="result-status-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+
+                <h3>Verification Failed</h3>
+
+                <p>
+                    The uploaded file did not match the registered record,
+                    or the document could not be verified successfully.
+                    Check the file and try again.
+                </p>
+
+            </div>
+
+        <!-- NOT REGISTERED -->
+        {% elif result == 'NOT_REGISTERED' %}
+
+            <div class="result-status result-status-warning">
+
+                <div class="result-status-icon">
+                    <i class="fas fa-file-circle-question"></i>
+                </div>
+
+                <h3>Document Not Registered</h3>
+
+                <p>
+                    No confirmed blockchain registration was found for
+                    this document version. Its authenticity could not
+                    be confirmed.
+                </p>
+
+            </div>
+
+        <!-- EXPIRED -->
+        {% elif result == 'EXPIRED' %}
+
+            <div class="result-status result-status-warning">
+
+                <div class="result-status-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+
+                <h3>Document Expired</h3>
+
+                <p>
+                    This document has passed its expiry date and is
+                    no longer considered valid for verification.
+                </p>
+
+            </div>
+
+        <!-- REVOKED -->
+        {% elif result == 'REVOKED' %}
+
+            <div class="result-status result-status-invalid">
+
+                <div class="result-status-icon">
+                    <i class="fas fa-ban"></i>
+                </div>
+
+                <h3>Document Revoked</h3>
+
+                <p>
+                    This document has been revoked by the system.
+                    It should not be treated as a currently valid document.
+                </p>
+
+            </div>
+
+        <!-- NOT FOUND -->
+        {% elif result == 'NOT_FOUND' %}
+
+            <div class="result-status result-status-invalid">
+
+                <div class="result-status-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+
+                <h3>Document Not Found</h3>
+
+                <p>
+                    No document was found for the supplied Document ID.
+                    Check the ID and try again.
+                </p>
+
+            </div>
+
+        <!-- BLOCKCHAIN UNAVAILABLE -->
+        {% elif result == 'BLOCKCHAIN_UNAVAILABLE' %}
+
+            <div class="result-status result-status-warning">
+
+                <div class="result-status-icon">
+                    <i class="fas fa-link-slash"></i>
+                </div>
+
+                <h3>Blockchain Unavailable</h3>
+
+                <p>
+                    The blockchain service could not be reached.
+                    The document's blockchain authenticity could not
+                    be confirmed at this time.
+                </p>
+
+            </div>
+
+        <!-- ERROR -->
+        {% elif result == 'ERROR' %}
+
+            <div class="result-status result-status-error">
+
+                <div class="result-status-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+
+                <h3>Verification Error</h3>
+
+                <p>
+                    An error occurred while processing the verification.
+                    Please try again later.
+                </p>
+
+            </div>
+
+        <!-- UNKNOWN RESULT -->
+        {% else %}
+
+            <div class="result-status result-status-neutral">
+
+                <div class="result-status-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+
+                <h3>Result Unavailable</h3>
+
+                <p>
+                    No recognized verification result is available.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+        <!-- Additional Message -->
+        {% if message %}
+            <div class="alert alert-info result-message">
+                <i class="fas fa-info-circle me-2"></i>
+                {{ message }}
+            </div>
+        {% endif %}
+
+        <!-- Document Information -->
+        {% if document %}
+
+            <div class="result-section">
+
+                <h5 class="result-section-title">
+                    <i class="fas fa-file-alt"></i>
+                    Document Information
+                </h5>
+
+                <div class="result-info-grid">
+
+                    <div class="result-info-item">
+                        <span class="result-info-label">
+                            Document ID
+                        </span>
+
+                        <span class="result-info-value">
+                            {{ document.document_id }}
+                        </span>
+                    </div>
+
+                    <div class="result-info-item">
+                        <span class="result-info-label">
+                            Document Title
+                        </span>
+
+                        <span class="result-info-value">
+                            {{ document.title }}
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+        <!-- Uploaded File Hash -->
+        {% if uploaded_hash %}
+
+            <div class="result-section">
+
+                <h5 class="result-section-title">
+                    <i class="fas fa-fingerprint"></i>
+                    Uploaded File SHA-256
+                </h5>
+
+                <div class="result-hash-box">
+
+                    <span class="result-hash-label">
+                        Generated hash of the uploaded file
+                    </span>
+
+                    <p class="result-hash-value" id="uploaded-hash">
+                        {{ uploaded_hash }}
+                    </p>
+
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary mt-3"
+                        onclick="copyUploadedHash()">
+
+                        <i class="fas fa-copy me-1"></i>
+                        Copy Hash
+
+                    </button>
+
+                    <span
+                        id="copy-hash-message"
+                        class="ms-2 small"
+                        role="status"
+                        aria-live="polite">
+                    </span>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+        <!-- Navigation Buttons -->
+        <div class="result-actions">
+
+            <a
+                href="{% url 'verify_home' %}"
+                class="btn btn-primary">
+
+                <i class="fas fa-search me-2"></i>
+                Verify Another Document
+
+            </a>
+
+            <a
+                href="{% url 'verifier_dashboard' %}"
+                class="btn btn-outline-secondary">
+
+                <i class="fas fa-th-large me-2"></i>
+                Back to Dashboard
+
+            </a>
+
+        </div>
+
+        <p class="result-disclaimer">
+            <i class="fas fa-lock me-1"></i>
+            Verification results depend on the document status and the
+            blockchain record available to the system at verification time.
+        </p>
+
+    </div>
+</div>
+
+
+</div>
+
+<script>
+    async function copyUploadedHash() {
+        const hashElement = document.getElementById("uploaded-hash");
+        const messageElement = document.getElementById("copy-hash-message");
+
+        if (!hashElement || !messageElement) {
+            return;
+        }
+
+        const hash = hashElement.textContent.trim();
+
+        try {
+            await navigator.clipboard.writeText(hash);
+            messageElement.textContent = "Hash copied.";
+            messageElement.className = "ms-2 small text-success";
+        } catch (error) {
+            messageElement.textContent =
+                "Copy unavailable. Please select the hash manually.";
+            messageElement.className = "ms-2 small text-danger";
+        }
+    }
+</script>
+
+{% endblock content %}

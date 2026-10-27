@@ -1,0 +1,453 @@
+
+{% extends 'dashboard.html' %}
+
+{% block title %}My Profile | SecureDocs{% endblock %}
+
+{% block content %}
+
+<style>
+    .profile-page {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 15px 10px 35px;
+    }
+
+    .profile-heading {
+        margin-bottom: 10px;
+    }
+
+    .profile-heading h2 {
+        color: #0b2545;
+        font-size: 27px;
+        font-weight: 750;
+        margin-bottom: 6px;
+    }
+
+    .profile-heading p {
+        color: #64748b;
+        font-size: 15px;
+        margin: 0;
+    }
+
+    .profile-card {
+        background: #ffffff;
+        border: 1px solid #e5eaf1;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 22px rgba(15, 23, 42, 0.06);
+    }
+
+    .profile-banner {
+        background: linear-gradient(120deg, #0b2545, #123967);
+        padding: 15px;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .profile-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        font-size: 30px;
+        font-weight: 750;
+        color: #ffffff;
+    }
+
+    .profile-banner h3 {
+        margin: 0 0 6px;
+        font-size: 20px;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    .profile-banner p {
+        margin: 0;
+        font-size: 13px;
+        color: #dbeafe;
+        overflow-wrap: anywhere;
+    }
+
+    .profile-body {
+        padding: 20px;
+    }
+
+    .profile-section-title {
+        color: #0b2545;
+        font-size: 15px;
+        font-weight: 750;
+        margin-bottom: 18px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #edf0f5;
+    }
+
+    .profile-info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .profile-info-item {
+        background: #f8fafc;
+        border: 1px solid #edf0f5;
+        border-radius: 7px;
+        padding: 12px;
+        min-width: 0;
+    }
+
+    .profile-info-label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 500;
+        margin-bottom: 9px;
+    }
+
+    .profile-info-label i {
+        color: #1677f9;
+        width: 12px;
+        text-align: center;
+    }
+
+    .profile-info-value {
+        color: #19365d;
+        font-size: 16px;
+        font-weight: 550;
+        overflow-wrap: anywhere;
+    }
+
+    .profile-role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 7px;
+        background: #eaf2ff;
+        color: #175cd3;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .profile-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 7px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .profile-status-approved {
+        background: #ecfdf3;
+        color: #15803d;
+    }
+
+    .profile-status-pending {
+        background: #fef9c3;
+        color: #a16207;
+    }
+
+    .profile-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 25px;
+        padding-top: 22px;
+        border-top: 1px solid #edf0f5;
+    }
+
+    .profile-actions .btn {
+        border-radius: 8px;
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 650;
+    }
+
+    .profile-actions .btn-primary {
+        background: #1677f9;
+        border-color: #1677f9;
+    }
+
+    .profile-actions .btn-primary:hover {
+        background: #0b5ed7;
+        border-color: #0b5ed7;
+    }
+
+    .profile-security-note {
+        margin-top: 20px;
+        padding: 13px 15px;
+        border-radius: 9px;
+        background: #eff6ff;
+        color: #315985;
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+    .profile-security-note i {
+        color: #1677f9;
+        margin-right: 6px;
+    }
+
+    @media (max-width: 600px) {
+        .profile-page {
+            padding: 8px 0 25px;
+        }
+
+        .profile-banner {
+            padding: 22px 18px;
+            gap: 14px;
+        }
+
+        .profile-avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 14px;
+            font-size: 24px;
+        }
+
+        .profile-banner h3 {
+            font-size: 18px;
+        }
+
+        .profile-body {
+            padding: 20px 16px;
+        }
+
+        .profile-info-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .profile-heading h2 {
+            font-size: 23px;
+        }
+
+        .profile-actions .btn {
+            flex: 1;
+            text-align: center;
+        }
+    }
+</style>
+
+
+<div class="container-fluid profile-page">
+
+    <!-- Page Heading -->
+    <div class="profile-heading">
+
+        <h2>
+            <i class="fas fa-user-circle me-2"></i>
+            My Profile
+        </h2>
+
+        <p>
+            View your account information and SecureDocs access details.
+        </p>
+
+    </div>
+
+
+    <!-- Profile Card -->
+    <div class="profile-card">
+
+        <!-- Profile Banner -->
+        <div class="profile-banner">
+
+            <div class="profile-avatar">
+                {{ user.username|first|upper }}
+            </div>
+
+            <div>
+                <h3>
+                    {{ user.get_full_name|default:user.username }}
+                </h3>
+
+                <p>
+                    <i class="fas fa-at me-1"></i>
+                    {{ user.username }}
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- Profile Information -->
+        <div class="profile-body">
+
+            <h5 class="profile-section-title">
+                <i class="fas fa-id-card me-2"></i>
+                Account Information
+            </h5>
+
+
+            <div class="profile-info-grid">
+
+                <!-- Username -->
+                <div class="profile-info-item">
+
+                    <div class="profile-info-label">
+                        <i class="fas fa-user"></i>
+                        Username
+                    </div>
+
+                    <div class="profile-info-value">
+                        {{ user.username }}
+                    </div>
+
+                </div>
+
+
+                <!-- Full Name -->
+                <div class="profile-info-item">
+
+                    <div class="profile-info-label">
+                        <i class="fas fa-address-card"></i>
+                        Full Name
+                    </div>
+
+                    <div class="profile-info-value">
+                        {{ user.get_full_name|default:"Not provided" }}
+                    </div>
+
+                </div>
+
+
+                <!-- Email -->
+                <div class="profile-info-item">
+
+                    <div class="profile-info-label">
+                        <i class="fas fa-envelope"></i>
+                        Email Address
+                    </div>
+
+                    <div class="profile-info-value">
+                        {{ user.email|default:"Not provided" }}
+                    </div>
+
+                </div>
+
+
+                <!-- Role -->
+                <div class="profile-info-item">
+
+                    <div class="profile-info-label">
+                        <i class="fas fa-user-shield"></i>
+                        Account Role
+                    </div>
+
+                    <div class="profile-info-value">
+
+                        <span class="profile-role-badge">
+                            <i class="fas fa-shield-alt"></i>
+                            {{ user.profile.get_role_display }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Account Approval -->
+                <div class="profile-info-item">
+
+                    <div class="profile-info-label">
+                        <i class="fas fa-user-check"></i>
+                        Account Approval
+                    </div>
+
+                    <div class="profile-info-value">
+
+                        {% if user.profile.is_approved %}
+
+                            <span class="profile-status profile-status-approved">
+                                <i class="fas fa-check-circle"></i>
+                                Approved
+                            </span>
+
+                        {% else %}
+
+                            <span class="profile-status profile-status-pending">
+                                <i class="fas fa-clock"></i>
+                                Pending Approval
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- Join Date -->
+                <div class="profile-info-item">
+
+                    <div class="profile-info-label">
+                        <i class="fas fa-calendar-alt"></i>
+                        Member Since
+                    </div>
+
+                    <div class="profile-info-value">
+                        {{ user.date_joined|date:"d M Y" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+<!-- Action Buttons -->
+<div class="profile-actions">
+    {% if user.is_authenticated %}
+        {% if user.is_superuser or user.profile.role == 'SUPERADMIN' %}
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-primary profile-btn">
+                <i class="fas fa-th-large me-2"></i> Admin Dashboard
+            </a>
+        {% elif user.profile.role == 'ISSUER' %}
+            <a href="{% url 'issuer_dashboard' %}" class="btn btn-primary profile-btn">
+                <i class="fas fa-th-large me-2"></i> Issuer Dashboard
+            </a>
+        {% elif user.profile.role == 'VERIFIER' %}
+            <a href="{% url 'verifier_dashboard' %}" class="btn btn-primary profile-btn">
+                <i class="fas fa-th-large me-2"></i> Verifier Dashboard
+            </a>
+        {% endif %}
+
+        <a href="{% url 'logout' %}" class="btn btn-outline-danger profile-btn">
+            <i class="fas fa-sign-out-alt me-2"></i> Logout
+        </a>
+    {% else %}
+        <a href="{% url 'home' %}" class="btn btn-primary profile-btn">
+            <i class="fas fa-home me-2"></i> Home
+        </a>
+    {% endif %}
+    </div>
+
+            <!-- Security Note -->
+            <div class="profile-security-note">
+
+                <i class="fas fa-lock"></i>
+
+                Your account role determines which SecureDocs features you can access.
+                Contact your administrator if your role or approval status needs to be updated.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

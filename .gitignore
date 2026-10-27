@@ -1,0 +1,38 @@
+# Python
+
+**pycache**/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+
+venv/
+.venv/
+
+# Environment variables and secrets
+
+.env
+.env.*
+
+# Django generated files
+
+staticfiles/
+*.log
+
+# Local database
+
+db.sqlite3
+
+# Uploaded documents
+
+media/
+
+# IDE
+
+.vscode/
+.idea/
+
+# Python test and cache files
+
+.pytest_cache/
+.coverage

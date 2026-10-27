@@ -1,0 +1,1194 @@
+
+{% extends 'dashboard.html' %}
+
+{% block content %}
+
+<style>
+    /* Main Layout */
+    .document-details-page {
+        max-width: 1250px;
+        margin: 8px auto 35px;
+        color: #19365d;
+    }
+
+    .details-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .details-header h2 {
+        color: #0b2545;
+        font-size: 26px;
+        font-weight: 750;
+        margin-bottom: 7px;
+    }
+
+    .details-header p {
+        color: #718096;
+        font-size: 13px;
+        margin: 0;
+        line-height: 1.7;
+    }
+
+    .details-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all .2s ease;
+        cursor: pointer;
+    }
+
+    .details-btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-navy {
+        background: #0b2545;
+        color: #ffffff;
+        border: 1px solid #0b2545;
+    }
+
+    .btn-navy:hover {
+        background: #123967;
+        color: #ffffff;
+    }
+
+    .btn-blue {
+        background: #1677f9;
+        color: #ffffff;
+        border: 1px solid #1677f9;
+    }
+
+    .btn-blue:hover {
+        background: #0d63d5;
+        color: #ffffff;
+    }
+
+    .btn-light-outline {
+        background: #ffffff;
+        color: #52657d;
+        border: 1px solid #d7e1ed;
+    }
+
+    .btn-light-outline:hover {
+        background: #f4f8fd;
+        color: #0b2545;
+    }
+
+    .btn-danger-outline {
+        background: #ffffff;
+        color: #dc3545;
+        border: 1px solid #f0b8bf;
+    }
+
+    .btn-danger-outline:hover {
+        background: #fff2f3;
+        color: #b02a37;
+    }
+
+    /* Quick Navigation */
+    .quick-navigation {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+        padding: 16px 19px;
+        background: #ffffff;
+        border: 1px solid #e5ebf3;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .quick-navigation-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #718096;
+        margin-right: 5px;
+    }
+
+    .quick-nav-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 11px;
+        border: 1px solid #e1e8f1;
+        border-radius: 7px;
+        color: #52657d;
+        background: #ffffff;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all .2s ease;
+    }
+
+    .quick-nav-link:hover {
+        color: #1677f9;
+        border-color: #b9d5ff;
+        background: #f4f8ff;
+    }
+
+    /* General Cards */
+    .details-card {
+        background: #ffffff;
+        border: 1px solid #e5ebf3;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        box-shadow: 0 3px 13px rgba(11, 37, 69, .035);
+        scroll-margin-top: 90px;
+    }
+
+    .details-card-header {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 17px 21px;
+        background: #ffffff;
+        border-bottom: 1px solid #edf1f6;
+    }
+
+    .details-card-icon {
+        width: 37px;
+        height: 37px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 9px;
+        font-size: 15px;
+    }
+
+    .icon-blue {
+        color: #1677f9;
+        background: #edf5ff;
+    }
+
+    .icon-green {
+        color: #198754;
+        background: #e9f9f0;
+    }
+
+    .icon-purple {
+        color: #7653d6;
+        background: #f2edff;
+    }
+
+    .icon-orange {
+        color: #d97706;
+        background: #fff3e6;
+    }
+
+    .icon-red {
+        color: #dc3545;
+        background: #fff0f0;
+    }
+
+    .details-card-header h5 {
+        color: #0b2545;
+        font-size: 15px;
+        font-weight: 750;
+        margin: 0;
+    }
+
+    .details-card-header p {
+        color: #8492a6;
+        font-size: 11px;
+        margin: 4px 0 0;
+    }
+
+    .details-card-body {
+        padding: 22px;
+    }
+
+    /* Document Information */
+    .document-info-item {
+        height: 100%;
+        padding: 15px;
+        background: #ffffff;
+        border: 1px solid #edf1f6;
+        border-radius: 9px;
+    }
+
+    .document-info-label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: #8492a6;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .35px;
+        margin-bottom: 9px;
+    }
+
+    .document-info-label i {
+        color: #8a9bb0;
+        font-size: 12px;
+    }
+
+    .document-info-value {
+        color: #19365d;
+        font-size: 14px;
+        font-weight: 650;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+        margin: 0;
+    }
+
+    .document-title-value {
+        font-size: 16px;
+        color: #0b2545;
+    }
+
+    /* Status Badges */
+    .details-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .status-active {
+        color: #147a45;
+        background: #e6f7ed;
+    }
+
+    .status-revoked {
+        color: #b42332;
+        background: #fff0f0;
+    }
+
+    .status-neutral {
+        color: #52657d;
+        background: #edf1f6;
+    }
+
+    .status-confirmed {
+        color: #147a45;
+        background: #e6f7ed;
+    }
+
+    .status-pending {
+        color: #996600;
+        background: #fff5d9;
+    }
+
+    .status-failed {
+        color: #b42332;
+        background: #fff0f0;
+    }
+
+    /* Hash Display */
+    .hash-description {
+        color: #718096;
+        font-size: 12px;
+        line-height: 1.7;
+        margin-bottom: 14px;
+    }
+
+    .hash-box {
+        position: relative;
+        padding: 15px;
+        color: #35506e;
+        background: #f5f8fc;
+        border: 1px solid #e3eaf3;
+        border-radius: 9px;
+        font-family: Consolas, Monaco, monospace;
+        font-size: 12px;
+        line-height: 1.8;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .hash-caption {
+        color: #8492a6;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        margin-bottom: 7px;
+    }
+
+    /* Blockchain */
+    .blockchain-notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 15px 17px;
+        border-radius: 9px;
+        margin-bottom: 20px;
+    }
+
+    .blockchain-notice i {
+        margin-top: 2px;
+        font-size: 17px;
+    }
+
+    .blockchain-notice h6 {
+        font-size: 13px;
+        font-weight: 750;
+        margin: 0 0 5px;
+    }
+
+    .blockchain-notice p {
+        font-size: 12px;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .notice-success {
+        background: #effaf3;
+        border: 1px solid #d0efdc;
+        color: #176b3a;
+    }
+
+    .notice-warning {
+        background: #fff9e9;
+        border: 1px solid #f4e5b5;
+        color: #8a6500;
+    }
+
+    .notice-danger {
+        background: #fff2f2;
+        border: 1px solid #f2d0d0;
+        color: #a52834;
+    }
+
+    .blockchain-info-grid {
+        margin-bottom: 3px;
+    }
+
+    .blockchain-field {
+        height: 100%;
+        padding: 14px;
+        background: #ffffff;
+        border: 1px solid #e7edf5;
+        border-radius: 9px;
+    }
+
+    .blockchain-field-label {
+        color: #8492a6;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .3px;
+        margin-bottom: 8px;
+    }
+
+    .blockchain-field-value {
+        color: #19365d;
+        font-size: 13px;
+        font-weight: 650;
+        overflow-wrap: anywhere;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .blockchain-hash {
+        padding: 12px;
+        color: #35506e;
+        background: #f5f8fc;
+        border: 1px solid #e3eaf3;
+        border-radius: 7px;
+        font-family: Consolas, Monaco, monospace;
+        font-size: 11px;
+        line-height: 1.8;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .blockchain-action-area {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #edf1f6;
+    }
+
+    /* QR Code */
+    .qr-section {
+        margin-top: 23px;
+        padding: 25px 15px;
+        text-align: center;
+        background: #f8fafd;
+        border: 1px solid #e5ebf3;
+        border-radius: 11px;
+    }
+
+    .qr-section h5 {
+        color: #0b2545;
+        font-size: 16px;
+        font-weight: 750;
+        margin-bottom: 7px;
+    }
+
+    .qr-section > p {
+        color: #718096;
+        font-size: 12px;
+        line-height: 1.7;
+        margin-bottom: 18px;
+    }
+
+    .qr-image {
+        display: block;
+        width: 190px;
+        height: 190px;
+        max-width: 100%;
+        object-fit: contain;
+        padding: 10px;
+        margin: 0 auto 18px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+    }
+
+    /* Version History */
+    .version-intro {
+        color: #718096;
+        font-size: 12px;
+        line-height: 1.7;
+        margin-bottom: 18px;
+    }
+
+    .version-table {
+        margin-bottom: 0;
+        font-size: 12px;
+    }
+
+    .version-table thead th {
+        padding: 13px 14px;
+        color: #52657d;
+        background: #f5f8fc;
+        border-bottom: 1px solid #e3eaf3;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: .4px;
+        white-space: nowrap;
+    }
+
+    .version-table tbody td {
+        padding: 13px 14px;
+        color: #52657d;
+        vertical-align: middle;
+        line-height: 1.7;
+    }
+
+    .version-number {
+        color: #0b2545;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+    .version-hash {
+        min-width: 170px;
+        max-width: 300px;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        font-family: Consolas, Monaco, monospace;
+        font-size: 11px;
+    }
+
+    .current-version-row td {
+        background: #f4fbf6;
+    }
+
+    /* Document Actions */
+    .document-actions-description {
+        color: #718096;
+        font-size: 12px;
+        line-height: 1.8;
+        margin-bottom: 19px;
+    }
+
+    .document-actions-buttons {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .details-header h2 {
+            font-size: 22px;
+        }
+
+        .details-card-body {
+            padding: 16px;
+        }
+
+        .details-card-header {
+            padding: 15px 16px;
+        }
+
+        .quick-navigation {
+            padding: 13px;
+        }
+
+        .quick-navigation-label {
+            width: 100%;
+        }
+
+        .document-actions-buttons {
+            align-items: stretch;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .details-header .details-btn {
+            width: 100%;
+        }
+
+        .document-actions-buttons {
+            flex-direction: column;
+        }
+
+        .document-actions-buttons .details-btn,
+        .document-actions-buttons form,
+        .document-actions-buttons form button {
+            width: 100%;
+        }
+
+        .qr-image {
+            width: 170px;
+            height: 170px;
+        }
+    }
+</style>
+
+<div class="container-fluid document-details-page">
+
+    <!-- Page Header -->
+    <div class="details-header">
+        <div>
+            <h2>
+                <i class="fas fa-file-shield me-2"></i>
+                Document Details
+            </h2>
+
+            <p>
+                Manage document information, blockchain registration,
+                QR codes, and version history.
+            </p>
+        </div>
+
+        <a href="{% url 'document_list' %}"
+           class="details-btn btn-light-outline">
+            <i class="fas fa-arrow-left"></i>
+            Back to Documents
+        </a>
+    </div>
+
+    <!-- Django Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show"
+                 role="alert">
+                {{ message }}
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close">
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Quick Navigation -->
+    <div class="quick-navigation">
+        <span class="quick-navigation-label">
+            <i class="fas fa-compass me-1"></i>
+            QUICK NAVIGATION
+        </span>
+
+        <a href="#document-info" class="quick-nav-link">
+            <i class="fas fa-file-alt"></i>
+            Information
+        </a>
+
+        <a href="#document-hash" class="quick-nav-link">
+            <i class="fas fa-fingerprint"></i>
+            SHA-256 Hash
+        </a>
+
+        <a href="#blockchain-section" class="quick-nav-link">
+            <i class="fas fa-link"></i>
+            Blockchain
+        </a>
+
+        <a href="#version-history" class="quick-nav-link">
+            <i class="fas fa-code-branch"></i>
+            Version History
+        </a>
+
+        <a href="#document-actions" class="quick-nav-link">
+            <i class="fas fa-sliders-h"></i>
+            Actions
+        </a>
+    </div>
+
+    <!-- Document Information -->
+    <div id="document-info" class="details-card">
+
+        <div class="details-card-header">
+            <div class="details-card-icon icon-blue">
+                <i class="fas fa-file-alt"></i>
+            </div>
+
+            <div>
+                <h5>Document Information</h5>
+                <p>Basic details and current document status</p>
+            </div>
+        </div>
+
+        <div class="details-card-body">
+            <div class="row g-3">
+
+                <div class="col-12 col-md-6">
+                    <div class="document-info-item">
+                        <div class="document-info-label">
+                            <i class="fas fa-fingerprint"></i>
+                            Document ID
+                        </div>
+
+                        <p class="document-info-value">
+                            {{ document.document_id }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="document-info-item">
+                        <div class="document-info-label">
+                            <i class="fas fa-heading"></i>
+                            Document Title
+                        </div>
+
+                        <p class="document-info-value document-title-value">
+                            {{ document.title }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="document-info-item">
+                        <div class="document-info-label">
+                            <i class="fas fa-folder"></i>
+                            Document Type
+                        </div>
+
+                        <p class="document-info-value">
+                            {{ document.get_document_type_display }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="document-info-item">
+                        <div class="document-info-label">
+                            <i class="fas fa-circle-check"></i>
+                            Document Status
+                        </div>
+
+                        <p class="document-info-value">
+                            {% if document.status == 'ACTIVE' %}
+                                <span class="details-status status-active">
+                                    <i class="fas fa-check-circle"></i>
+                                    {{ document.get_status_display }}
+                                </span>
+
+                            {% elif document.status == 'REVOKED' %}
+                                <span class="details-status status-revoked">
+                                    <i class="fas fa-ban"></i>
+                                    {{ document.get_status_display }}
+                                </span>
+
+                            {% else %}
+                                <span class="details-status status-neutral">
+                                    {{ document.get_status_display }}
+                                </span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="document-info-item">
+                        <div class="document-info-label">
+                            <i class="fas fa-calendar-alt"></i>
+                            Issue Date
+                        </div>
+
+                        <p class="document-info-value">
+                            {{ document.issue_date|date:"d M Y"|default:"Not specified" }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="document-info-item">
+                        <div class="document-info-label">
+                            <i class="fas fa-calendar-times"></i>
+                            Expiry Date
+                        </div>
+
+                        <p class="document-info-value">
+                            {{ document.expiry_date|date:"d M Y"|default:"No expiry date" }}
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- SHA-256 Document Hash -->
+    <div id="document-hash" class="details-card">
+
+        <div class="details-card-header">
+            <div class="details-card-icon icon-purple">
+                <i class="fas fa-fingerprint"></i>
+            </div>
+
+            <div>
+                <h5>SHA-256 Document Hash</h5>
+                <p>Digital fingerprint used to compare document content</p>
+            </div>
+        </div>
+
+        <div class="details-card-body">
+            <p class="hash-description">
+                A SHA-256 hash is generated from the document's contents.
+                A changed file normally produces a different hash.
+            </p>
+
+            <div class="hash-caption">Document Hash</div>
+
+            <div class="hash-box">
+                {{ document.document_hash|default:"Hash not available" }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Blockchain Registration -->
+    <div id="blockchain-section" class="details-card">
+
+        <div class="details-card-header">
+            <div class="details-card-icon icon-green">
+                <i class="fas fa-link"></i>
+            </div>
+
+            <div>
+                <h5>Blockchain Registration</h5>
+                <p>Registration status and transaction information</p>
+            </div>
+        </div>
+
+        <div class="details-card-body">
+
+            {% if blockchain_record %}
+
+                {% if blockchain_record.status == 'CONFIRMED' %}
+
+                    <div class="blockchain-notice notice-success">
+                        <i class="fas fa-check-circle"></i>
+
+                        <div>
+                            <h6>Blockchain Record Confirmed</h6>
+
+                            <p>
+                                A confirmed blockchain record is available
+                                for the version shown below.
+                            </p>
+                        </div>
+                    </div>
+
+                {% elif blockchain_record.status == 'PENDING' %}
+
+                    <div class="blockchain-notice notice-warning">
+                        <i class="fas fa-clock"></i>
+
+                        <div>
+                            <h6>Registration Pending</h6>
+
+                            <p>
+                                The registration has not yet been confirmed.
+                                Do not treat this record as blockchain-verified
+                                until confirmation succeeds.
+                            </p>
+                        </div>
+                    </div>
+
+                {% else %}
+
+                    <div class="blockchain-notice notice-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+
+                        <div>
+                            <h6>Registration Not Confirmed</h6>
+
+                            <p>
+                                The blockchain registration status is
+                                {{ blockchain_record.get_status_display }}.
+                                Check the registration process before relying on it.
+                            </p>
+                        </div>
+                    </div>
+
+                {% endif %}
+
+                <div class="row g-3 blockchain-info-grid">
+
+                    <div class="col-12 col-md-6">
+                        <div class="blockchain-field">
+                            <div class="blockchain-field-label">
+                                Registration Status
+                            </div>
+
+                            <p class="blockchain-field-value">
+                                {% if blockchain_record.status == 'CONFIRMED' %}
+                                    <span class="details-status status-confirmed">
+                                        <i class="fas fa-check-circle"></i>
+                                        {{ blockchain_record.get_status_display }}
+                                    </span>
+
+                                {% elif blockchain_record.status == 'PENDING' %}
+                                    <span class="details-status status-pending">
+                                        <i class="fas fa-clock"></i>
+                                        {{ blockchain_record.get_status_display }}
+                                    </span>
+
+                                {% else %}
+                                    <span class="details-status status-failed">
+                                        <i class="fas fa-times-circle"></i>
+                                        {{ blockchain_record.get_status_display }}
+                                    </span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="blockchain-field">
+                            <div class="blockchain-field-label">
+                                Registered Version
+                            </div>
+
+                            <p class="blockchain-field-value">
+                                Version {{ blockchain_record.document_version.version_number }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="blockchain-field">
+                            <div class="blockchain-field-label">
+                                Registered Document Hash
+                            </div>
+
+                            <div class="blockchain-hash">
+                                {{ blockchain_record.document_hash|default:"Not available" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="blockchain-field">
+                            <div class="blockchain-field-label">
+                                Transaction Hash
+                            </div>
+
+                            <div class="blockchain-hash">
+                                {{ blockchain_record.transaction_hash|default:"Not available" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="blockchain-field">
+                            <div class="blockchain-field-label">
+                                Block Number
+                            </div>
+
+                            <p class="blockchain-field-value">
+                                {{ blockchain_record.block_number|default:"Not available" }}
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- QR Code -->
+                {% if qr_url and blockchain_record.status == 'CONFIRMED' %}
+
+                    <div class="qr-section">
+                        <h5>
+                            <i class="fas fa-qrcode me-2"></i>
+                            Document QR Code
+                        </h5>
+
+                        <p>
+                            Share this QR code to help a verifier access
+                            the document verification page.
+                        </p>
+
+                        <img
+                            src="{{ qr_url }}"
+                            alt="QR code for document {{ document.document_id }}"
+                            class="qr-image">
+
+                        <a href="{{ qr_url }}"
+                           download="document_{{ document.document_id }}_qr.png"
+                           class="details-btn btn-blue">
+                            <i class="fas fa-download"></i>
+                            Download QR Code
+                        </a>
+                    </div>
+
+                {% elif blockchain_record.status == 'CONFIRMED' %}
+
+                    <div class="blockchain-notice notice-warning mt-3 mb-0">
+                        <i class="fas fa-info-circle"></i>
+
+                        <div>
+                            <h6>QR Code Unavailable</h6>
+                            <p>
+                                The blockchain record is confirmed, but
+                                the QR code is not available on this page.
+                            </p>
+                        </div>
+                    </div>
+
+                {% endif %}
+
+            {% else %}
+
+                <div class="blockchain-notice notice-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+
+                    <div>
+                        <h6>No Blockchain Record Available</h6>
+
+                        <p>
+                            No blockchain record was supplied to this page
+                            for the selected document version. This does not
+                            by itself prove that no record exists on-chain.
+                        </p>
+                    </div>
+                </div>
+
+                {% if document.status == 'REVOKED' %}
+
+                    <div class="blockchain-notice notice-danger mb-0">
+                        <i class="fas fa-ban"></i>
+
+                        <div>
+                            <h6>Document Revoked</h6>
+
+                            <p>
+                                This document has been revoked. Do not
+                                register or distribute it as an active document.
+                            </p>
+                        </div>
+                    </div>
+
+                {% else %}
+
+                    <p class="hash-description">
+                        You can submit the current version for blockchain
+                        registration using the action below.
+                    </p>
+
+                    <form
+                        method="POST"
+                        action="{% url 'register_blockchain' document.document_id %}">
+
+                        {% csrf_token %}
+
+                        <button type="submit" class="details-btn btn-blue">
+                            <i class="fas fa-link"></i>
+                            Register Current Version
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- Version History -->
+    <div id="version-history" class="details-card">
+
+        <div class="details-card-header">
+            <div class="details-card-icon icon-purple">
+                <i class="fas fa-code-branch"></i>
+            </div>
+
+            <div>
+                <h5>Document Version History</h5>
+                <p>Review current and previous document versions</p>
+            </div>
+        </div>
+
+        <div class="details-card-body">
+
+            <p class="version-intro">
+                Each version can have its own SHA-256 hash and blockchain
+                registration. Check the registration status of the specific
+                version before relying on its authenticity.
+            </p>
+
+            <div class="table-responsive">
+                <table class="table table-hover version-table">
+
+                    <thead>
+                        <tr>
+                            <th>Version</th>
+                            <th>SHA-256 Hash</th>
+                            <th>Version Status</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for version in versions %}
+
+                            <tr class="{% if version.is_current %}current-version-row{% endif %}">
+
+                                <td>
+                                    <span class="version-number">
+                                        Version {{ version.version_number }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="version-hash">
+                                        {{ version.document_hash|default:"Not available" }}
+                                    </div>
+                                </td>
+
+                                <td>
+                                    {% if version.is_current %}
+                                        <span class="details-status status-active">
+                                            <i class="fas fa-check-circle"></i>
+                                            Current Version
+                                        </span>
+                                    {% else %}
+                                        <span class="details-status status-neutral">
+                                            Previous Version
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {{ version.created_at|date:"d M Y, H:i"|default:"Not available" }}
+                                </td>
+
+                            </tr>
+
+                        {% empty %}
+
+                            <tr>
+                                <td colspan="4" class="text-center py-4">
+                                    <i class="fas fa-folder-open d-block mb-2"
+                                       style="font-size: 23px; color: #a0aec0;"></i>
+
+                                    <span class="text-muted">
+                                        No document versions found.
+                                    </span>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document Actions -->
+    <div id="document-actions" class="details-card">
+
+        <div class="details-card-header">
+            <div class="details-card-icon icon-orange">
+                <i class="fas fa-sliders-h"></i>
+            </div>
+
+            <div>
+                <h5>Manage Document</h5>
+                <p>Available document management actions</p>
+            </div>
+        </div>
+
+        <div class="details-card-body">
+
+            <p class="document-actions-description">
+                Create a new version when the document changes.
+                Revoking a document marks it as no longer active.
+                Confirm the document details before performing an action.
+            </p>
+
+            <div class="document-actions-buttons">
+
+                {% if document.status != 'REVOKED' %}
+
+                    <a href="{% url 'create_version' document.document_id %}"
+                       class="details-btn btn-blue">
+                        <i class="fas fa-code-branch"></i>
+                        Create New Version
+                    </a>
+
+                    <form
+                        method="POST"
+                        action="{% url 'revoke_document' document.document_id %}"
+                        onsubmit="return confirm('Are you sure you want to revoke this document?');">
+
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="details-btn btn-danger-outline">
+                            <i class="fas fa-ban"></i>
+                            Revoke Document
+                        </button>
+
+                    </form>
+
+                {% else %}
+
+                    <span class="details-status status-revoked">
+                        <i class="fas fa-ban"></i>
+                        Document Revoked
+                    </span>
+
+                {% endif %}
+
+                <a href="{% url 'document_list' %}"
+                   class="details-btn btn-light-outline">
+                    <i class="fas fa-list"></i>
+                    Back to Documents
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

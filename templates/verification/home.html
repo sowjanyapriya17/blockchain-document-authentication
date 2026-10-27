@@ -1,0 +1,520 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+
+<style>
+    .verify-page {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px 0 35px;
+    }
+
+    .verify-heading {
+        margin-bottom: 24px;
+    }
+
+    .verify-heading h2 {
+        color: #0b2545;
+        font-size: 25px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .verify-heading p {
+        color: #718096;
+        font-size: 13px;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .verify-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .verify-card-header {
+        padding: 17px 20px;
+        background: #f8faff;
+        border-bottom: 1px solid #e5eaf1;
+    }
+
+    .verify-card-header h4 {
+        color: #0b2545;
+        font-size: 17px;
+        font-weight: 700;
+        margin: 0 0 5px;
+    }
+
+    .verify-card-header p {
+        color: #718096;
+        font-size: 12px;
+        margin: 0;
+    }
+
+    .verify-card-body {
+        padding: 22px;
+    }
+
+    .verify-option {
+        height: 100%;
+        padding: 17px;
+        background: #ffffff;
+        border: 1px solid #e3eaf3;
+        border-radius: 10px;
+    }
+
+    .verify-option-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 43px;
+        height: 43px;
+        margin-bottom: 13px;
+        background: #edf4ff;
+        color: #1677f9;
+        border-radius: 9px;
+        font-size: 19px;
+    }
+
+    .verify-option h5 {
+        color: #0b2545;
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .verify-option-description {
+        min-height: 40px;
+        color: #718096;
+        font-size: 12px;
+        line-height: 1.7;
+        margin-bottom: 18px;
+    }
+
+    .verify-label {
+        color: #405570;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 7px;
+    }
+
+    .verify-form-control {
+        min-height: 42px;
+        border: 1px solid #dce4ee;
+        border-radius: 7px;
+        font-size: 13px;
+        box-shadow: none;
+    }
+
+    .verify-form-control:focus {
+        border-color: #1677f9;
+        box-shadow: 0 0 0 3px rgba(22, 119, 249, 0.1);
+    }
+
+    .verify-help {
+        display: block;
+        color: #8996a8;
+        font-size: 11px;
+        margin-top: 6px;
+    }
+
+    .verify-submit {
+        min-height: 42px;
+        background: #1677f9;
+        border-color: #1677f9;
+        border-radius: 7px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .verify-submit:hover {
+        background: #0d62d6;
+        border-color: #0d62d6;
+    }
+
+    .verify-divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 23px 0;
+        color: #94a3b8;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .verify-divider::before,
+    .verify-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #e5eaf1;
+    }
+
+    .verify-qr-panel {
+        padding: 18px;
+        background: #f8faff;
+        border: 1px solid #e3eaf3;
+        border-radius: 10px;
+    }
+
+    .verify-qr-panel h5 {
+        color: #0b2545;
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .verify-qr-panel p {
+        color: #718096;
+        font-size: 12px;
+        line-height: 1.7;
+        margin-bottom: 15px;
+    }
+
+    #qr-reader {
+        width: 100%;
+        max-width: 420px;
+        margin: 0 auto;
+        overflow: hidden;
+        border-radius: 8px;
+    }
+
+    #qr-message {
+        font-size: 12px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+
+    .verify-camera-note {
+        color: #8996a8;
+        font-size: 11px;
+        margin-top: 12px;
+    }
+
+    @media (max-width: 576px) {
+        .verify-heading h2 {
+            font-size: 21px;
+        }
+
+        .verify-card-body {
+            padding: 14px;
+        }
+
+        .verify-option {
+            padding: 14px;
+        }
+    }
+</style>
+
+<div class="container-fluid verify-page">
+
+
+<!-- Page Heading -->
+<div class="verify-heading">
+    <h2>
+        <i class="fas fa-shield-alt me-2"></i>
+        Document Verification
+    </h2>
+
+    <p>
+        Verify document authenticity using its registered ID or QR code.
+        Check the document against its recorded blockchain information.
+    </p>
+</div>
+
+<!-- Main Verification Card -->
+<div class="verify-card">
+
+    <div class="verify-card-header">
+        <h4>Verify a Document</h4>
+        <p>Choose one of the available verification methods below.</p>
+    </div>
+
+    <div class="verify-card-body">
+
+        <!-- Verify by Document ID -->
+        <div class="verify-option" id="idVerification">
+
+            <div class="verify-option-icon">
+                <i class="fas fa-file-circle-check"></i>
+            </div>
+
+            <h5>Verify by Document ID</h5>
+
+            <p class="verify-option-description">
+                Enter the document ID and upload the document file
+                to check whether it matches the registered record.
+            </p>
+
+            <form
+                method="POST"
+                action="{% url 'verify_by_id' %}"
+                enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                <div class="mb-3">
+
+                    <label for="document_id" class="form-label verify-label">
+                        Document ID
+                    </label>
+
+                    <input
+                        type="text"
+                        name="document_id"
+                        id="document_id"
+                        class="form-control verify-form-control"
+                        placeholder="Enter document ID"
+                        value="{% if document %}{{ document.document_id }}{% endif %}"
+                        required>
+
+                    <small class="verify-help">
+                        Enter the ID assigned to the registered document.
+                    </small>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label for="document_file" class="form-label verify-label">
+                        Upload Document
+                    </label>
+
+                    <input
+                        type="file"
+                        name="document_file"
+                        id="document_file"
+                        class="form-control verify-form-control"
+                        accept=".pdf,.png,.jpg,.jpeg"
+                        required>
+
+                    <small class="verify-help">
+                        Select the document file you want to verify.
+                    </small>
+
+                </div>
+
+                <button type="submit" class="btn btn-primary verify-submit w-100">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    Verify Document
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- Alternative Method -->
+        <div class="verify-divider">Or use QR code</div>
+
+        <!-- QR Scanner -->
+        <div class="verify-qr-panel" id="qrVerification">
+
+            <div class="text-center mb-3">
+
+                <div class="verify-option-icon mx-auto">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+
+                <h5>Scan Document QR Code</h5>
+
+                <p>
+                    Start your camera and scan the QR code associated
+                    with a registered document.
+                </p>
+
+                <button
+                    type="button"
+                    id="startScannerButton"
+                    class="btn btn-outline-primary btn-sm"
+                    onclick="showQrScanner()">
+
+                    <i class="fas fa-camera me-2"></i>
+                    Start QR Scanner
+
+                </button>
+
+            </div>
+
+            <div id="qr-reader" style="display: none;"></div>
+
+            <p id="qr-message" class="text-danger text-center mt-3 mb-0"
+               role="status" aria-live="polite"></p>
+
+            <div class="text-center">
+
+                <button
+                    type="button"
+                    id="stopScannerButton"
+                    class="btn btn-outline-secondary btn-sm mt-3"
+                    onclick="stopQrScanner()"
+                    style="display: none;">
+
+                    <i class="fas fa-stop me-1"></i>
+                    Stop Scanner
+
+                </button>
+
+            </div>
+
+            <div class="verify-camera-note text-center">
+                <i class="fas fa-info-circle me-1"></i>
+                Camera access may require HTTPS or localhost and your permission.
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- html5-qrcode library -->
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<script>
+    let qrScanner = null;
+    let scannerStarting = false;
+
+    function showQrScanner() {
+        const reader = document.getElementById("qr-reader");
+        const message = document.getElementById("qr-message");
+        const startButton = document.getElementById("startScannerButton");
+        const stopButton = document.getElementById("stopScannerButton");
+
+        if (qrScanner !== null || scannerStarting) {
+            return;
+        }
+
+        message.textContent = "";
+
+        if (typeof Html5Qrcode === "undefined") {
+            message.textContent =
+                "The QR scanner library could not be loaded. Check your internet connection and reload the page.";
+            return;
+        }
+
+        scannerStarting = true;
+        reader.style.display = "block";
+        startButton.disabled = true;
+        stopButton.style.display = "inline-block";
+
+        qrScanner = new Html5Qrcode("qr-reader");
+
+        qrScanner.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: { width: 220, height: 220 }
+            },
+
+            function (decodedText) {
+                handleScannedQr(decodedText);
+            },
+
+            function () {
+                // Ignore temporary scan failures while searching for a QR code.
+            }
+
+        ).then(function () {
+            scannerStarting = false;
+            startButton.style.display = "none";
+            startButton.disabled = false;
+        }).catch(function (error) {
+            scannerStarting = false;
+            qrScanner = null;
+
+            reader.style.display = "none";
+            startButton.disabled = false;
+            stopButton.style.display = "none";
+
+            message.textContent =
+                "Unable to start the camera. Check camera permissions and try again.";
+
+            console.error("QR scanner error:", error);
+        });
+    }
+
+    function handleScannedQr(decodedText) {
+        const message = document.getElementById("qr-message");
+
+        let scannedUrl;
+
+        try {
+            scannedUrl = new URL(decodedText);
+        } catch (error) {
+            message.textContent =
+                "This QR code does not contain a valid document verification URL.";
+            return;
+        }
+
+        /*
+         * Accept only same-origin verification URLs.
+         * Change the path check if your project's actual verification
+         * URL uses a different pattern.
+         */
+        if (
+            scannedUrl.origin !== window.location.origin ||
+            !scannedUrl.pathname.startsWith("/verify/document/")
+        ) {
+            message.textContent =
+                "This QR code is not a recognized document verification link.";
+            return;
+        }
+
+        stopQrScanner().then(function () {
+            window.location.href = scannedUrl.href;
+        });
+    }
+
+    function stopQrScanner() {
+        const reader = document.getElementById("qr-reader");
+        const message = document.getElementById("qr-message");
+        const startButton = document.getElementById("startScannerButton");
+        const stopButton = document.getElementById("stopScannerButton");
+
+        if (qrScanner === null) {
+            reader.style.display = "none";
+            startButton.style.display = "inline-block";
+            startButton.disabled = false;
+            stopButton.style.display = "none";
+            scannerStarting = false;
+
+            return Promise.resolve();
+        }
+
+        const scanner = qrScanner;
+        qrScanner = null;
+
+        return scanner.stop()
+            .catch(function (error) {
+                console.warn("Unable to stop QR scanner:", error);
+            })
+            .then(function () {
+                try {
+                    scanner.clear();
+                } catch (error) {
+                    // Scanner may already have been cleared.
+                }
+
+                reader.style.display = "none";
+                startButton.style.display = "inline-block";
+                startButton.disabled = false;
+                stopButton.style.display = "none";
+                scannerStarting = false;
+            });
+    }
+
+    // Stop the camera when the user leaves the page.
+    window.addEventListener("beforeunload", function () {
+        if (qrScanner !== null) {
+            qrScanner.stop().catch(function () {});
+        }
+    });
+</script>
+
+{% endblock %}

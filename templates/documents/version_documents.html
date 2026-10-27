@@ -1,0 +1,388 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+
+<style>
+    .versions-page {
+        max-width: 1150px;
+        margin: 0 auto;
+        padding: 15px 0 30px;
+        color: #19365d;
+    }
+
+    .versions-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 22px;
+    }
+
+    .versions-title {
+        color: #0b2545;
+        font-size: 23px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .versions-subtitle {
+        color: #718096;
+        font-size: 13px;
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .versions-summary {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 13px 16px;
+        margin-bottom: 18px;
+        background: #ffffff;
+        border: 1px solid #e4eaf2;
+        border-radius: 9px;
+    }
+
+    .versions-summary-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        background: #edf4ff;
+        color: #1677f9;
+        border-radius: 8px;
+        font-size: 17px;
+    }
+
+    .versions-count {
+        color: #0b2545;
+        font-size: 19px;
+        font-weight: 700;
+        line-height: 1.3;
+    }
+
+    .versions-count-label {
+        color: #718096;
+        font-size: 12px;
+    }
+
+    .versions-table-card {
+        background: #ffffff;
+        border: 1px solid #e4eaf2;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .versions-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px 16px;
+        background: #f8faff;
+        border-bottom: 1px solid #e4eaf2;
+    }
+
+    .versions-card-header h5 {
+        color: #0b2545;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .versions-card-header span {
+        color: #718096;
+        font-size: 12px;
+    }
+
+    .versions-table {
+        margin-bottom: 0;
+        vertical-align: middle;
+        font-size: 13px;
+    }
+
+    .versions-table thead th {
+        padding: 12px 14px;
+        background: #f1f5fa;
+        color: #405570;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        white-space: nowrap;
+        border-bottom: 1px solid #e1e8f0;
+    }
+
+    .versions-table tbody td {
+        padding: 11px 14px;
+        color: #405570;
+        border-color: #edf1f6;
+    }
+
+    .versions-table tbody tr:hover {
+        background: #f8faff;
+    }
+
+    .versions-document-id {
+        color: #1677f9;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .versions-document-title {
+        color: #19365d;
+        font-weight: 600;
+    }
+
+    .versions-number {
+        display: inline-block;
+        min-width: 32px;
+        padding: 5px 9px;
+        text-align: center;
+        color: #4056a1;
+        background: #eef1ff;
+        border-radius: 5px;
+        font-weight: 700;
+    }
+
+    .versions-current {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 9px;
+        color: #187744;
+        background: #e8f7ee;
+        border-radius: 5px;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .versions-actions {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        flex-wrap: wrap;
+    }
+
+    .versions-actions .btn {
+        padding: 6px 10px;
+        font-size: 11px;
+        font-weight: 600;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+
+    .versions-empty {
+        padding: 40px 20px;
+        text-align: center;
+    }
+
+    .versions-empty-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 58px;
+        height: 58px;
+        margin: 0 auto 14px;
+        color: #1677f9;
+        background: #edf4ff;
+        border-radius: 50%;
+        font-size: 23px;
+    }
+
+    .versions-empty h5 {
+        color: #0b2545;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .versions-empty p {
+        max-width: 430px;
+        margin: 0 auto;
+        color: #718096;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    @media (max-width: 576px) {
+        .versions-title {
+            font-size: 20px;
+        }
+
+        .versions-table thead th,
+        .versions-table tbody td {
+            padding: 10px;
+        }
+
+        .versions-card-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="container-fluid versions-page">
+
+```
+<!-- Page Heading -->
+<div class="versions-header">
+    <div>
+        <h2 class="versions-title">
+            <i class="fas fa-code-branch me-2"></i>
+            Manage Document Versions
+        </h2>
+
+        <p class="versions-subtitle">
+            Track document updates, view version history, and create new versions.
+        </p>
+    </div>
+
+    <a href="{% url 'issuer_dashboard' %}"
+       class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-2"></i>
+        Back to Dashboard
+    </a>
+</div>
+
+<!-- Summary -->
+<div class="versions-summary">
+    <div class="versions-summary-icon">
+        <i class="fas fa-file-alt"></i>
+    </div>
+
+    <div>
+        <div class="versions-count">{{ documents|length }}</div>
+        <div class="versions-count-label">Documents Available</div>
+    </div>
+</div>
+
+<!-- Version Records -->
+<div class="versions-table-card">
+
+    <div class="versions-card-header">
+        <h5>
+            <i class="fas fa-history me-2"></i>
+            Document Version Records
+        </h5>
+
+        <span>
+            <i class="fas fa-layer-group me-1"></i>
+            Version History
+        </span>
+    </div>
+
+    {% if documents %}
+
+    <div class="table-responsive">
+        <table class="table versions-table">
+
+            <thead>
+                <tr>
+                    <th>Document ID</th>
+                    <th>Document Title</th>
+                    <th>Total Versions</th>
+                    <th>Current Version</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for document in documents %}
+
+                <tr>
+                    <td>
+                        <span class="versions-document-id">
+                            {{ document.document_id }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="versions-document-title">
+                            {{ document.title }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="versions-number">
+                            {{ document.total_versions }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {% with current_version=document.versions.all %}
+                            {% for version in current_version %}
+                                {% if version.is_current %}
+                                    <span class="versions-current">
+                                        <i class="fas fa-check-circle"></i>
+                                        V{{ version.version_number }}
+                                    </span>
+                                {% endif %}
+                            {% empty %}
+                                <span class="text-muted">—</span>
+                            {% endfor %}
+                        {% endwith %}
+                    </td>
+
+                    <td>
+                        <div class="versions-actions">
+
+                            <a href="{% url 'document_detail' document.document_id %}"
+                               class="btn btn-outline-primary">
+                                <i class="fas fa-history me-1"></i>
+                                View History
+                            </a>
+
+                            <a href="{% url 'create_version' document.document_id %}"
+                               class="btn btn-success">
+                                <i class="fas fa-plus me-1"></i>
+                                Add Version
+                            </a>
+
+                        </div>
+                    </td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+    {% else %}
+
+    <!-- Empty State -->
+    <div class="versions-empty">
+
+        <div class="versions-empty-icon">
+            <i class="fas fa-code-branch"></i>
+        </div>
+
+        <h5>No Document Versions Found</h5>
+
+        <p>
+            There are currently no documents available for version management.
+            Upload a document to begin maintaining its version history.
+        </p>
+
+        <a href="{% url 'create_document' %}"
+           class="btn btn-primary btn-sm mt-3">
+            <i class="fas fa-upload me-2"></i>
+            Upload Document
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+</div>
+
+{% endblock %}

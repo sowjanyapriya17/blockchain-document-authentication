@@ -1,0 +1,811 @@
+
+{% extends 'dashboard.html' %}
+
+{% block title %}Manage Users | SecureDocs{% endblock %}
+
+{% block content %}
+
+<style>
+    .users-page {
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 8px 4px 30px;
+        color: #19365d;
+    }
+
+    .users-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+
+    .users-title {
+        font-size: 27px;
+        font-weight: 750;
+        color: #0b2545;
+        margin-bottom: 5px;
+        letter-spacing: -0.5px;
+    }
+
+    .users-subtitle {
+        color: #64748b;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .users-header-icon {
+        width: 43px;
+        height: 43px;
+        border-radius: 12px;
+        background: #eaf2ff;
+        color: #1677f9;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 19px;
+        flex-shrink: 0;
+    }
+
+    .users-title-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .users-panel {
+        background: #fff;
+        border: 1px solid #e5eaf1;
+        border-radius: 13px;
+        box-shadow: 0 3px 12px rgba(15, 23, 42, 0.035);
+        margin-bottom: 22px;
+        overflow: hidden;
+    }
+
+    .users-panel-header {
+        padding: 17px 20px;
+        border-bottom: 1px solid #edf0f5;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .users-panel-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #0b2545;
+        margin: 0;
+    }
+
+    .users-panel-description {
+        font-size: 12px;
+        color: #718096;
+        margin: 4px 0 0;
+    }
+
+    .users-panel-body {
+        padding: 20px;
+    }
+
+    .users-page .form-label {
+        font-size: 12px;
+        font-weight: 650;
+        color: #475569;
+        margin-bottom: 7px;
+    }
+
+    .users-page .form-control,
+    .users-page .form-select {
+        min-height: 39px;
+        font-size: 13px;
+        border-color: #dce3ed;
+        border-radius: 8px;
+        box-shadow: none;
+    }
+
+    .users-page .form-control:focus,
+    .users-page .form-select:focus {
+        border-color: #1677f9;
+        box-shadow: 0 0 0 3px rgba(22, 119, 249, 0.10);
+    }
+
+    .users-page .btn {
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 8px 12px;
+        white-space: nowrap;
+    }
+
+    .users-page .btn-sm {
+        font-size: 11px;
+        padding: 6px 9px;
+    }
+
+    .users-page .btn-primary {
+        background: #1677f9;
+        border-color: #1677f9;
+    }
+
+    .users-page .btn-primary:hover {
+        background: #0b5ed7;
+        border-color: #0b5ed7;
+    }
+
+    .users-count {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 13px;
+        flex-wrap: wrap;
+    }
+
+    .users-count-title {
+        color: #0b2545;
+        font-size: 15px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .users-count-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 30px;
+        padding: 4px 9px;
+        border-radius: 7px;
+        background: #eaf2ff;
+        color: #1260c5;
+        font-size: 12px;
+        font-weight: 750;
+        margin-left: 5px;
+    }
+
+    .users-table-wrap {
+        overflow-x: auto;
+    }
+
+    .users-table {
+        margin: 0;
+        font-size: 12px;
+        vertical-align: middle;
+        min-width: 950px;
+    }
+
+    .users-table thead th {
+        background: #f7f9fc;
+        color: #52627a;
+        font-size: 11px;
+        font-weight: 750;
+        text-transform: uppercase;
+        letter-spacing: 0.35px;
+        padding: 15px 13px;
+        border-bottom: 1px solid #e5eaf1;
+        white-space: nowrap;
+    }
+
+    .users-table tbody td {
+        padding: 1px 20px;
+        border-color: #edf0f5;
+        color: #475569;
+        line-height: 1.3
+    }
+
+    .users-table tbody tr:hover td {
+        background: #fafcff;
+    }
+
+    .user-identity {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 100px;
+    }
+
+    .user-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: #eaf2ff;
+        color: #1260c5;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 750;
+        flex-shrink: 0;
+    }
+
+    .user-username {
+        color: #19365d;
+        font-size: 12px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    .user-email {
+        color: #64748b;
+        overflow-wrap: anywhere;
+        min-width: 140px;
+        font-weight:700;
+    }
+
+    .user-full-name {
+        color: #334155;
+        font-weight: 550;
+        min-width: 110px;
+    }
+
+    .user-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border-radius: 6px;
+        padding: 5px 8px;
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .role-issuer {
+        color: #175cd3;
+        background: #eff6ff;
+    }
+
+    .role-verifier {
+        color: #087e8b;
+        background: #e8fafb;
+    }
+
+    .role-admin {
+        color: #475569;
+        background: #eef1f5;
+    }
+
+    .role-default {
+        color: #64748b;
+        background: #f1f5f9;
+    }
+
+    .status-approved {
+        color: #15803d;
+        background: #ecfdf3;
+    }
+
+    .status-pending {
+        color: #a16207;
+        background: #fef9c3;
+    }
+
+    .user-actions {
+        min-width: 145px;
+        width: 160px;
+    }
+
+    .user-actions form {
+        margin-bottom: 8px;
+    }
+
+    .user-actions form:last-child {
+        margin-bottom: 0;
+    }
+
+    .role-form {
+        padding-top: 8px;
+        border-top: 1px solid #edf0f5;
+        margin-top: 8px;
+    }
+
+    .role-form .form-select {
+        min-height: 32px;
+        font-size: 11px;
+        margin-bottom: 6px;
+    }
+
+    .action-full {
+        width: 100%;
+    }
+
+    .users-empty {
+        padding: 45px 20px !important;
+        text-align: center;
+        color: #64748b !important;
+    }
+
+    .users-empty i {
+        display: block;
+        font-size: 30px;
+        color: #94a3b8;
+        margin-bottom: 12px;
+    }
+
+    .users-empty strong {
+        display: block;
+        color: #334155;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    .users-page .alert {
+        border-radius: 9px;
+        font-size: 13px;
+    }
+
+    @media (max-width: 768px) {
+        .users-page {
+            padding: 4px 0 20px;
+        }
+
+        .users-title {
+            font-size: 23px;
+        }
+
+        .users-panel-body {
+            padding: 15px;
+        }
+
+        .users-header {
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="container-fluid users-page">
+
+    <!-- Page Header -->
+    <div class="users-header">
+
+        <div class="users-title-row">
+
+            <div class="users-header-icon">
+                <i class="fas fa-users-cog"></i>
+            </div>
+
+            <div>
+                <h2 class="users-title">User Management</h2>
+
+                <p class="users-subtitle">
+                    Manage accounts, assign roles, and control user access.
+                </p>
+            </div>
+
+        </div>
+
+        <a href="{% url 'admin_dashboard' %}"
+           class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>
+            Back to Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show"
+                 role="alert">
+
+                <i class="fas fa-info-circle me-2"></i>
+                {{ message }}
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close"></button>
+
+            </div>
+        {% endfor %}
+    {% endif %}
+
+
+    <!-- Search and Filters -->
+    <section class="users-panel">
+
+        <div class="users-panel-header">
+
+            <div>
+                <h5 class="users-panel-title">
+                    <i class="fas fa-filter me-2 text-primary"></i>
+                    Search & Filters
+                </h5>
+
+                <p class="users-panel-description">
+                    Find accounts by username, email, role, or approval status.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="users-panel-body">
+
+            <form method="GET">
+
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-12 col-md-6 col-xl-4">
+
+                        <label for="userSearch" class="form-label">
+                            Search Users
+                        </label>
+
+                        <input
+                            id="userSearch"
+                            type="text"
+                            name="q"
+                            class="form-control"
+                            placeholder="Username, name, or email"
+                            value="{{ search_query }}">
+
+                    </div>
+
+
+                    <div class="col-12 col-sm-6 col-xl-3">
+
+                        <label for="roleFilter" class="form-label">
+                            Filter by Role
+                        </label>
+
+                        <select id="roleFilter"
+                                name="role"
+                                class="form-select">
+
+                            <option value="">All Roles</option>
+
+                            <option value="ISSUER"
+                                {% if role_filter == 'ISSUER' %}selected{% endif %}>
+                                Issuer
+                            </option>
+
+                            <option value="VERIFIER"
+                                {% if role_filter == 'VERIFIER' %}selected{% endif %}>
+                                Verifier
+                            </option>
+
+                            <option value="SUPERADMIN"
+                                {% if role_filter == 'SUPERADMIN' %}selected{% endif %}>
+                                Super Admin
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-12 col-sm-6 col-xl-3">
+
+                        <label for="statusFilter" class="form-label">
+                            Approval Status
+                        </label>
+
+                        <select id="statusFilter"
+                                name="status"
+                                class="form-select">
+
+                            <option value="">All Statuses</option>
+
+                            <option value="approved"
+                                {% if status_filter == 'approved' %}selected{% endif %}>
+                                Approved
+                            </option>
+
+                            <option value="pending"
+                                {% if status_filter == 'pending' %}selected{% endif %}>
+                                Pending
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-12 col-xl-2">
+
+                        <div class="d-flex gap-2">
+
+                            <button type="submit"
+                                    class="btn btn-primary flex-grow-1">
+                                <i class="fas fa-search me-1"></i>
+                                Search
+                            </button>
+
+                            <a href="{% url 'manage_users' %}"
+                               class="btn btn-outline-secondary">
+                                Reset
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
+
+
+    <!-- User Count -->
+    <div class="users-count">
+
+        <h5 class="users-count-title">
+            User Accounts
+            <span class="users-count-badge">{{ result_count }}</span>
+        </h5>
+
+        <span class="text-muted small">
+            <i class="fas fa-database me-1"></i>
+            Accounts matching your filters
+        </span>
+
+    </div>
+
+
+    <!-- Users Table -->
+    <section class="users-panel">
+
+        <div class="users-panel-header">
+
+            <div>
+                <h5 class="users-panel-title">
+                    <i class="fas fa-list-ul me-2 text-primary"></i>
+                    Registered Users
+                </h5>
+
+                <p class="users-panel-description">
+                    Review account details and manage permissions.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="users-table-wrap">
+
+            <table class="table users-table table-hover">
+
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Full Name</th>
+                        <th>Email Address</th>
+                        <th>Role</th>
+                        <th>Approval</th>
+                        <th>Joined Date</th>
+                        <th>Account Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for profile in profiles %}
+
+                        <tr>
+
+                            <!-- Username -->
+                            <td>
+                                <div class="user-identity">
+
+                                    <div class="user-avatar">
+                                        {{ profile.user.username|first|upper }}
+                                    </div>
+
+                                    <div class="user-username">
+                                        {{ profile.user.username }}
+                                    </div>
+
+                                </div>
+                            </td>
+
+
+                            <!-- Full Name -->
+                            <td>
+                                <span class="user-full-name">
+                                    {{ profile.user.get_full_name|default:"Not provided" }}
+                                </span>
+                            </td>
+
+
+                            <!-- Email -->
+                            <td>
+                                <span class="user-email">
+                                    {{ profile.user.email|default:"Not provided" }}
+                                </span>
+                            </td>
+
+
+                            <!-- Role -->
+                            <td>
+
+                                {% if profile.role == 'ISSUER' %}
+
+                                    <span class="user-badge role-issuer">
+                                        <i class="fas fa-file-signature"></i>
+                                        Issuer
+                                    </span>
+
+                                {% elif profile.role == 'VERIFIER' %}
+
+                                    <span class="user-badge role-verifier">
+                                        <i class="fas fa-shield-alt"></i>
+                                        Verifier
+                                    </span>
+
+                                {% elif profile.role == 'SUPERADMIN' %}
+
+                                    <span class="user-badge role-admin">
+                                        <i class="fas fa-user-shield"></i>
+                                        Super Admin
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="user-badge role-default">
+                                        {{ profile.get_role_display }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Approval Status -->
+                            <td>
+
+                                {% if profile.is_approved %}
+
+                                    <span class="user-badge status-approved">
+                                        <i class="fas fa-check-circle"></i>
+                                        Approved
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="user-badge status-pending">
+                                        <i class="fas fa-clock"></i>
+                                        Pending
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- Joined Date -->
+                            <td class="text-nowrap">
+                                {{ profile.user.date_joined|date:"d M Y" }}
+                            </td>
+
+
+                            <!-- User Actions -->
+                            <td class="user-actions">
+
+                                {% if not profile.is_approved %}
+
+                                    <form method="POST">
+                                        {% csrf_token %}
+
+                                        <input type="hidden"
+                                               name="user_id"
+                                               value="{{ profile.user.id }}">
+
+                                        <button type="submit"
+                                                name="action"
+                                                value="approve"
+                                                class="btn btn-success btn-sm action-full">
+
+                                            <i class="fas fa-check me-1"></i>
+                                            Approve Account
+
+                                        </button>
+
+                                    </form>
+
+                                {% else %}
+
+                                    <form method="POST">
+                                        {% csrf_token %}
+
+                                        <input type="hidden"
+                                               name="user_id"
+                                               value="{{ profile.user.id }}">
+
+                                        <button type="submit"
+                                                name="action"
+                                                value="reject"
+                                                class="btn btn-outline-warning btn-sm action-full">
+
+                                            <i class="fas fa-ban me-1"></i>
+                                            Suspend Account
+
+                                        </button>
+
+                                    </form>
+
+                                {% endif %}
+
+
+                                {% if not profile.user.is_superuser %}
+
+                                    <form method="POST" class="role-form">
+
+                                        {% csrf_token %}
+
+                                        <input type="hidden"
+                                               name="user_id"
+                                               value="{{ profile.user.id }}">
+
+                                        <input type="hidden"
+                                               name="action"
+                                               value="change_role">
+
+                                        <label class="form-label"
+                                               for="role-{{ profile.user.id }}">
+                                            Assign Role
+                                        </label>
+
+                                        <select id="role-{{ profile.user.id }}"
+                                                name="role"
+                                                class="form-select form-select-sm">
+
+                                            <option value="ISSUER"
+                                                {% if profile.role == 'ISSUER' %}selected{% endif %}>
+                                                Issuer
+                                            </option>
+
+                                            <option value="VERIFIER"
+                                                {% if profile.role == 'VERIFIER' %}selected{% endif %}>
+                                                Verifier
+                                            </option>
+
+                                        </select>
+
+                                        <button type="submit"
+                                                class="btn btn-primary btn-sm action-full">
+
+                                            <i class="fas fa-save me-1"></i>
+                                            Update Role
+
+                                        </button>
+
+                                    </form>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+                            <td colspan="7" class="users-empty">
+
+                                <i class="fas fa-users"></i>
+
+                                <strong>No users found</strong>
+
+                                Try changing your search terms or filters.
+
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

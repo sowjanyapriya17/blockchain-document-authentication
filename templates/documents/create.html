@@ -1,0 +1,337 @@
+
+{% extends 'dashboard.html' %}
+
+{% block content %}
+
+<style>
+    .add-document-page {
+        max-width: 900px;
+        margin: 18px auto 40px;
+        color: #19365d;
+    }
+
+    .document-page-header {
+        margin-bottom: 24px;
+    }
+
+    .document-page-header h2 {
+        color: #0b2545;
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .document-page-header p {
+        color: #718096;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .document-form-card {
+        background: #ffffff;
+        border: 1px solid #e4ebf3;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 5px 22px rgba(11, 37, 69, 0.06);
+    }
+
+    .document-form-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 22px 26px;
+        color: #ffffff;
+        background: #0b2545;
+    }
+
+    .document-form-header-icon {
+        width: 46px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+        font-size: 20px;
+    }
+
+    .document-form-header h4 {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0 0 5px;
+    }
+
+    .document-form-header p {
+        color: #d4e2f5;
+        font-size: 12px;
+        margin: 0;
+    }
+
+    .document-form-body {
+        padding: 28px;
+    }
+
+    .document-form-intro {
+        margin-bottom: 24px;
+    }
+
+    .document-form-intro h5 {
+        color: #0b2545;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .document-form-intro p {
+        color: #718096;
+        font-size: 13px;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    /* Django-generated form fields */
+    .document-form-body form p {
+        margin-bottom: 19px;
+    }
+
+    .document-form-body form p label {
+        display: block;
+        color: #19365d;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .document-form-body form input:not([type="checkbox"]):not([type="radio"]),
+    .document-form-body form select,
+    .document-form-body form textarea {
+        display: block;
+        width: 100%;
+        padding: 11px 13px;
+        border: 1px solid #d7e1ed;
+        border-radius: 8px;
+        background-color: #ffffff;
+        color: #19365d;
+        font-size: 13px;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .document-form-body form input[type="file"] {
+        padding: 10px;
+        background: #f8fafd;
+    }
+
+    .document-form-body form input:focus,
+    .document-form-body form select:focus,
+    .document-form-body form textarea:focus {
+        border-color: #1677f9;
+        box-shadow: 0 0 0 3px rgba(22, 119, 249, 0.1);
+        outline: none;
+    }
+
+    .document-form-body form textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .document-form-body form .helptext,
+    .document-form-body form p small {
+        display: block;
+        color: #8492a6;
+        font-size: 12px;
+        line-height: 1.6;
+        margin-top: 6px;
+    }
+
+    .document-form-body form ul.errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0;
+        color: #dc3545;
+        font-size: 12px;
+    }
+
+    .document-form-notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 15px 17px;
+        margin-top: 24px;
+        background: #f1f7ff;
+        border: 1px solid #dceaff;
+        border-radius: 9px;
+    }
+
+    .document-form-notice i {
+        color: #1677f9;
+        font-size: 17px;
+        margin-top: 2px;
+    }
+
+    .document-form-notice p {
+        color: #526b89;
+        font-size: 12px;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .document-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 11px;
+        flex-wrap: wrap;
+        padding-top: 23px;
+        margin-top: 25px;
+        border-top: 1px solid #edf1f6;
+    }
+
+    .document-action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 19px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+    .document-btn-primary {
+        color: #ffffff;
+        background: #1677f9;
+        border: 1px solid #1677f9;
+    }
+
+    .document-btn-primary:hover {
+        color: #ffffff;
+        background: #0d63d5;
+        border-color: #0d63d5;
+        transform: translateY(-1px);
+    }
+
+    .document-btn-secondary {
+        color: #52657d;
+        background: #ffffff;
+        border: 1px solid #d7e1ed;
+    }
+
+    .document-btn-secondary:hover {
+        color: #0b2545;
+        background: #f5f8fc;
+    }
+
+    @media (max-width: 576px) {
+        .add-document-page {
+            margin-top: 10px;
+        }
+
+        .document-page-header h2 {
+            font-size: 22px;
+        }
+
+        .document-form-header {
+            padding: 18px;
+        }
+
+        .document-form-body {
+            padding: 19px;
+        }
+
+        .document-form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .document-action-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="add-document-page">
+
+        <!-- Page Heading -->
+        <div class="document-page-header">
+            <h2>
+                <i class="fas fa-file-circle-plus me-2"></i>
+                Add Document
+            </h2>
+
+            <p>
+                Upload a certificate or official document for secure authentication.
+            </p>
+        </div>
+
+        <!-- Document Form Card -->
+        <div class="document-form-card">
+
+            <div class="document-form-header">
+                <div class="document-form-header-icon">
+                    <i class="fas fa-cloud-arrow-up"></i>
+                </div>
+
+                <div>
+                    <h4>Upload New Document</h4>
+                    <p>Complete the document details and select your file.</p>
+                </div>
+            </div>
+
+            <div class="document-form-body">
+
+                <div class="document-form-intro">
+                    <h5>Document Information</h5>
+                    <p>
+                        Enter the required details carefully. Your document will
+                        be processed by the system according to your existing
+                        document creation and blockchain registration workflow.
+                    </p>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {{ form.as_p }}
+
+                    <!-- Security Notice -->
+                    <div class="document-form-notice">
+                        <i class="fas fa-shield-alt"></i>
+
+                        <p>
+                            <strong>Secure Document Handling</strong><br>
+                            The system can generate a SHA-256 hash for your uploaded
+                            file. Blockchain verification requires the corresponding
+                            document hash to be successfully registered on the blockchain.
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="document-form-actions">
+
+                        <a href="{% url 'issuer_dashboard' %}"
+                           class="document-action-btn document-btn-secondary">
+                            <i class="fas fa-arrow-left"></i>
+                            Cancel
+                        </a>
+
+                        <button type="submit"
+                                class="document-action-btn document-btn-primary">
+                            <i class="fas fa-cloud-arrow-up"></i>
+                            Upload Document
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

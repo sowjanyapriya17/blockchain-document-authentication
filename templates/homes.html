@@ -1,0 +1,288 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureDocs | Blockchain Document Authentication</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+
+<!-- Reusable isometric cube (used in hero art) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="cube-shape" viewBox="0 0 64 64">
+        <polygon points="32,3 61,19 32,35 3,19" fill="#5db0ff"/>
+        <polygon points="3,19 32,35 32,62 3,46" fill="#1b6df0"/>
+        <polygon points="61,19 32,35 32,62 61,46" fill="#0a4fcf"/>
+    </symbol>
+</svg>
+
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar navbar-expand-lg navbar-dark main-navbar">
+    <div class="container">
+        <a class="navbar-brand brand" href="{% url 'home' %}">
+            <i class="fa-solid fa-shield-halved brand-logo"></i>
+            <span class="brand-text">SecureDocs<small>Blockchain Document Authentication</small></span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarContent" aria-controls="navbarContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item"><a class="nav-link " href="#home">Home</a></li>
+                <li class="nav-item"><a class="nav-link " href="#about">About</a></li>
+                <li class="nav-item"><a class="nav-link " href="#features">Features</a></li>
+                <li class="nav-item"><a class="nav-link " href="#how-it-works">How It Works</a></li>
+                <li class="nav-item"><a class="nav-link login-link" href="{% url 'login' %}">Login</a></li>
+                <li class="nav-item"><a class="btn signup-btn" href="{% url 'signup' %}">Sign Up</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<section class="hero-section" id="home">
+    <div class="container">
+        <div class="row align-items-center">
+
+            <!-- LEFT -->
+            <div class="col-lg-6">
+                <div class="security-badge">
+                    <i class="fa-solid fa-shield-halved"></i> Blockchain-Powered Security
+                </div>
+
+                <h1 class="hero-title">Secure Document Lifecycle &amp; Authentication System</h1>
+
+                <p class="hero-description">
+                    A decentralized, tamper-proof solution for document management,
+                    verification and authentication using blockchain technology.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="{% url 'signup' %}" class="btn primary-btn"><i class="fa-solid fa-user"></i> Get Started</a>
+                    <a href="{% url 'login' %}" class="btn secondary-btn"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+                </div>
+
+                <div class="trust-features">
+                    <div class="trust-feature">
+                        <span class="trust-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                        <div><h6>Tamper-Proof</h6><p>Immutable records<br>on blockchain</p></div>
+                    </div>
+                    <div class="trust-feature">
+                        <span class="trust-icon"><i class="fa-solid fa-lock"></i></span>
+                        <div><h6>Secure</h6><p>Cryptographic<br>protection</p></div>
+                    </div>
+                    <div class="trust-feature">
+                        <span class="trust-icon"><i class="fa-solid fa-bolt"></i></span>
+                        <div><h6>Transparent</h6><p>Verifiable &amp;<br>trustworthy</p></div>
+                    </div>
+                    <div class="trust-feature">
+                        <span class="trust-icon"><i class="fa-solid fa-diagram-project"></i></span>
+                        <div><h6>Decentralized</h6><p>No single point<br>of control</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: illustration + process list -->
+            <div class="col-lg-6">
+                <div class="hero-visual">
+
+                    <div class="hero-art">
+                        <div class="visual-glow"></div>
+                        <div class="network-ring ring-one"></div>
+                        <div class="network-ring ring-two"></div>
+
+                        <svg class="blockchain-cube cube-one"><use href="#cube-shape"/></svg>
+                        <svg class="blockchain-cube cube-two"><use href="#cube-shape"/></svg>
+                        <svg class="blockchain-cube cube-three"><use href="#cube-shape"/></svg>
+                        <svg class="blockchain-cube cube-four"><use href="#cube-shape"/></svg>
+                        <svg class="blockchain-cube cube-five"><use href="#cube-shape"/></svg>
+
+                        <div class="document-shadow"></div>
+
+                        <div class="document-card">
+                            <div class="document-fold"></div>
+                            <div class="document-content"><span></span><span></span><span></span><span></span></div>
+                            <div class="qr-code"><i class="fa-solid fa-qrcode"></i></div>
+                            <svg class="document-shield" viewBox="0 0 64 72" aria-hidden="true">
+                                <path d="M32 2 60 12v24c0 18-14 30-28 34C18 66 4 54 4 36V12Z"
+                                      fill="#1167e8" stroke="#9cc8ff" stroke-width="3" stroke-linejoin="round"/>
+                                <path d="m19 36 9 9 17-18" fill="none" stroke="#fff" stroke-width="6"
+                                      stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="process-list">
+                        <div class="process-item">
+                            <span class="process-icon"><i class="fa-regular fa-file-lines"></i></span>
+                            <div><strong>Upload</strong><strong>Document</strong></div>
+                        </div>
+                        <div class="process-item">
+                            <span class="process-icon"><i class="fa-solid fa-fingerprint"></i></span>
+                            <div><strong>Generate</strong><strong>SHA-256 Hash</strong></div>
+                        </div>
+                        <div class="process-item">
+                            <span class="process-icon"><i class="fa-solid fa-cube"></i></span>
+                            <div><strong>Register on</strong><strong>Blockchain</strong></div>
+                        </div>
+                        <div class="process-item">
+                            <span class="process-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                            <div><strong>Verify</strong><strong>Anytime</strong></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section class="about-section" id="about">
+    <div class="container">
+        <div class="row align-items-center">
+
+            <div class="col-lg-5 about-content">
+                <span class="section-label">ABOUT THE PROJECT</span>
+                <h2>What is SecureDocs?</h2>
+                <p>
+                    SecureDocs is a blockchain-based document management and authentication
+                    system that ensures the integrity, authenticity and lifecycle management
+                    of digital documents. It provides a secure, transparent and decentralized
+                    way to store, verify and manage documents using cryptographic hashing
+                    and blockchain technology.
+                </p>
+                <a href="#how-it-works" class="btn primary-btn learn-btn">Learn More <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="about-grid" id="features">
+
+                    <div class="about-item">
+                        <div class="about-icon blue-icon"><i class="fa-regular fa-file-lines"></i></div>
+                        <div><h5>Document Management</h5><p>Upload, update and manage documents with version control.</p></div>
+                    </div>
+
+                    <div class="about-item">
+                        <div class="about-icon purple-icon"><i class="fa-solid fa-cubes"></i></div>
+                        <div><h5>Blockchain Registration</h5><p>Store document hashes on blockchain for permanent records.</p></div>
+                    </div>
+
+                    <div class="about-item">
+                        <div class="about-icon green-icon"><i class="fa-solid fa-qrcode"></i></div>
+                        <div><h5>Multi-Method Verification</h5><p>Verify by document ID or QR code with instant results.</p></div>
+                    </div>
+
+                    <div class="about-item">
+                        <div class="about-icon red-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div><h5>Revocation &amp; Lifecycle</h5><p>Revoke documents and track their complete lifecycle.</p></div>
+                    </div>
+
+                    <div class="about-item">
+                        <div class="about-icon orange-icon"><i class="fa-regular fa-file-pdf"></i></div>
+                        <div><h5>Detailed Reports</h5><p>Download verification reports in PDF format.</p></div>
+                    </div>
+
+                    <div class="about-item">
+                        <div class="about-icon cyan-icon"><i class="fa-regular fa-clock"></i></div>
+                        <div><h5>Audit Logs</h5><p>Track all important activities and user actions.</p></div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section class="workflow-section" id="how-it-works">
+    <div class="section-heading text-center">
+        <span class="section-label">HOW IT WORKS</span>
+        <h2>Simple Steps to Verify Document</h2>
+    </div>
+
+    <div class="workflow">
+        <div class="workflow-step">
+            <div class="step-visual"><span class="step-number">1</span>
+                <div class="step-icon"><i class="fa-regular fa-file-lines"></i></div></div>
+            <h5>Upload Document</h5>
+            <p>Issuer uploads the document and generates a SHA-256 hash.</p>
+        </div>
+
+        <div class="workflow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+        <div class="workflow-step">
+            <div class="step-visual"><span class="step-number">2</span>
+                <div class="step-icon"><i class="fa-solid fa-cubes"></i></div></div>
+            <h5>Register on Blockchain</h5>
+            <p>Hash is stored securely on the blockchain network.</p>
+        </div>
+
+        <div class="workflow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+        <div class="workflow-step">
+            <div class="step-visual"><span class="step-number">3</span>
+                <div class="step-icon"><i class="fa-solid fa-qrcode"></i></div></div>
+            <h5>Verify Document</h5>
+            <p>Use document ID or QR code to verify authenticity.</p>
+        </div>
+
+        <div class="workflow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+        <div class="workflow-step">
+            <div class="step-visual"><span class="step-number">4</span>
+                <div class="step-icon filled"><i class="fa-solid fa-check"></i></div></div>
+            <h5>Get Results</h5>
+            <p>Instant verification with detailed information.</p>
+        </div>
+
+        <div class="workflow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+        <div class="workflow-step">
+            <div class="step-visual"><span class="step-number">5</span>
+                <div class="step-icon"><i class="fa-solid fa-shield-halved"></i></div></div>
+            <h5>View Records</h5>
+            <p>Access history, reports and lifecycle details.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-4 footer-brand">
+                <i class="fa-solid fa-shield-halved"></i>
+                <div><h5>SecureDocs</h5><p>Blockchain Document Authentication</p></div>
+            </div>
+            <div class="col-lg-4 footer-links">
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'signup' %}">Sign Up</a>
+            </div>
+            <div class="col-lg-4 footer-copyright">
+                <p>&copy; 2025 SecureDocs. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

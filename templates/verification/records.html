@@ -1,0 +1,455 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+
+<style>
+    .records-page {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 18px 0 30px;
+        color: #19365d;
+    }
+
+    .records-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .records-heading h2 {
+        color: #0b2545;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .records-heading p {
+        color: #718096;
+        font-size: 13px;
+        margin: 0;
+    }
+
+    .records-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 12px;
+        border: 1px solid #dce6f3;
+        border-radius: 8px;
+        background: #f7faff;
+        color: #244b7b;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .records-card {
+        background: #ffffff;
+        border: 1px solid #e3e9f1;
+        border-radius: 11px;
+        overflow: hidden;
+    }
+
+    .records-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 15px 18px;
+        background: #f8faff;
+        border-bottom: 1px solid #e3e9f1;
+    }
+
+    .records-card-header h5 {
+        color: #0b2545;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .records-card-header small {
+        color: #718096;
+        font-size: 11px;
+    }
+
+    .records-table {
+        margin: 0;
+        font-size: 12px;
+        vertical-align: middle;
+    }
+
+    .records-table thead th {
+        padding: 11px 12px;
+        background: #f1f5fb;
+        color: #405570;
+        border-bottom: 1px solid #dfe7f1;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .3px;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .records-table tbody td {
+        padding: 10px 12px;
+        color: #405570;
+        border-color: #edf1f6;
+        line-height: 1.5;
+    }
+
+    .records-table tbody tr:hover {
+        background: #f8fbff;
+    }
+
+    .record-id {
+        color: #1677f9;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .record-document-title {
+        min-width: 130px;
+        color: #19365d;
+        font-weight: 600;
+    }
+
+    .record-method {
+        display: inline-block;
+        padding: 4px 7px;
+        background: #f0f5fc;
+        border: 1px solid #e0e9f5;
+        border-radius: 5px;
+        color: #405570;
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .record-hash {
+        display: block;
+        min-width: 150px;
+        max-width: 220px;
+        color: #64748b;
+        font-family: Consolas, monospace;
+        font-size: 10px;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .record-result {
+        display: inline-block;
+        padding: 5px 8px;
+        border-radius: 5px;
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .result-valid {
+        background: #e7f8ef;
+        color: #187747;
+    }
+
+    .result-invalid,
+    .result-revoked {
+        background: #fdecec;
+        color: #b42318;
+    }
+
+    .result-expired {
+        background: #fff3d6;
+        color: #8a5a00;
+    }
+
+    .result-neutral {
+        background: #edf1f5;
+        color: #526173;
+    }
+
+    .record-download {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 8px;
+        padding: 6px 9px;
+        border-radius: 6px;
+        font-size: 10px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .records-empty {
+        padding: 45px 15px !important;
+        text-align: center;
+    }
+
+    .records-empty i {
+        display: block;
+        margin-bottom: 12px;
+        color: #a8b8cc;
+        font-size: 32px;
+    }
+
+    .records-empty h6 {
+        color: #19365d;
+        font-weight: 700;
+    }
+
+    .records-empty p {
+        color: #718096;
+        font-size: 12px;
+        margin: 0;
+    }
+
+    .records-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 18px;
+    }
+
+    .records-footer-note {
+        color: #718096;
+        font-size: 11px;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .records-heading h2 {
+            font-size: 21px;
+        }
+
+        .records-table thead th,
+        .records-table tbody td {
+            padding: 9px;
+        }
+
+        .records-footer .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container-fluid records-page">
+
+
+<!-- Page Heading -->
+<div class="records-heading">
+
+    <div>
+        <h2>
+            <i class="fas fa-clipboard-check me-2"></i>
+            Verification Records
+        </h2>
+
+        <p>
+            Review document verification attempts and download PDF reports.
+        </p>
+    </div>
+
+    <div class="records-count">
+        <i class="fas fa-list-check"></i>
+        Total Records: {{ records|length }}
+    </div>
+
+</div>
+
+<!-- Records Table Card -->
+<div class="records-card">
+
+    <div class="records-card-header">
+
+        <h5>
+            <i class="fas fa-history me-2"></i>
+            Verification History
+        </h5>
+
+        <small>
+            Document authentication audit trail
+        </small>
+
+    </div>
+
+    <div class="table-responsive">
+
+        <table class="table records-table">
+
+            <thead>
+                <tr>
+                    <th>Verification ID</th>
+                    <th>Document ID</th>
+                    <th>Document Title</th>
+                    <th>Method</th>
+                    <th>Generated Hash</th>
+                    <th>Blockchain Hash</th>
+                    <th>Result / Report</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for record in records %}
+
+                <tr>
+
+                    <td>
+                        <span class="record-id">
+                            #{{ record.verification_id }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {% if record.document %}
+                            {{ record.document.document_id }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <div class="record-document-title">
+                            {% if record.document %}
+                                {{ record.document.title }}
+                            {% else %}
+                                Unknown Document
+                            {% endif %}
+                        </div>
+                    </td>
+
+                    <td>
+                        <span class="record-method">
+                            {{ record.method|default:"—" }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="record-hash">
+                            {{ record.generated_hash|default:"—" }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="record-hash">
+                            {{ record.blockchain_hash|default:"—" }}
+                        </span>
+                    </td>
+
+                    <td>
+
+                        {% if record.result == 'VALID' %}
+
+                            <span class="record-result result-valid">
+                                <i class="fas fa-check-circle me-1"></i>
+                                VALID
+                            </span>
+
+                        {% elif record.result == 'INVALID' %}
+
+                            <span class="record-result result-invalid">
+                                <i class="fas fa-times-circle me-1"></i>
+                                INVALID
+                            </span>
+
+                        {% elif record.result == 'REVOKED' %}
+
+                            <span class="record-result result-revoked">
+                                <i class="fas fa-ban me-1"></i>
+                                REVOKED
+                            </span>
+
+                        {% elif record.result == 'EXPIRED' %}
+
+                            <span class="record-result result-expired">
+                                <i class="fas fa-clock me-1"></i>
+                                EXPIRED
+                            </span>
+
+                        {% elif record.result == 'NOT_FOUND' %}
+
+                            <span class="record-result result-neutral">
+                                NOT FOUND
+                            </span>
+
+                        {% elif record.result == 'NOT_REGISTERED' %}
+
+                            <span class="record-result result-neutral">
+                                NOT REGISTERED
+                            </span>
+
+                        {% else %}
+
+                            <span class="record-result result-neutral">
+                                {{ record.result|default:"UNKNOWN" }}
+                            </span>
+
+                        {% endif %}
+
+                        <div>
+                            <a
+                                href="{% url 'download_verification_report' record.verification_id %}"
+                                class="btn btn-outline-danger record-download">
+
+                                <i class="fas fa-file-pdf"></i>
+                                Download PDF
+
+                            </a>
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="7" class="records-empty">
+
+                        <i class="fas fa-folder-open"></i>
+
+                        <h6>No Verification Records Found</h6>
+
+                        <p>
+                            Verification attempts will appear here when records are available.
+                        </p>
+
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- Footer Actions -->
+<div class="records-footer">
+
+    <p class="records-footer-note">
+        <i class="fas fa-shield-alt me-1"></i>
+        Verification results are recorded for audit and traceability.
+    </p>
+
+    <a
+        href="{% url 'verifier_dashboard' %}"
+        class="btn btn-outline-secondary btn-sm">
+
+        <i class="fas fa-arrow-left me-2"></i>
+        Back to Dashboard
+
+    </a>
+
+</div>
+
+
+</div>
+
+{% endblock content %}

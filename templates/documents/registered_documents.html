@@ -1,0 +1,419 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+
+<style>
+    .registered-page {
+        max-width: 1250px;
+        margin: 0 auto;
+        padding: 15px 0 30px;
+        color: #19365d;
+    }
+
+    .registered-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+
+    .registered-title {
+        color: #0b2545;
+        font-size: 23px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .registered-subtitle {
+        color: #718096;
+        font-size: 13px;
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .registered-summary {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 13px 16px;
+        margin-bottom: 18px;
+        background: #ffffff;
+        border: 1px solid #e4eaf2;
+        border-radius: 9px;
+    }
+
+    .registered-summary-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        color: #1677f9;
+        background: #edf4ff;
+        border-radius: 8px;
+        font-size: 17px;
+    }
+
+    .registered-count {
+        color: #0b2545;
+        font-size: 19px;
+        font-weight: 700;
+        line-height: 1.3;
+    }
+
+    .registered-count-label {
+        color: #718096;
+        font-size: 12px;
+    }
+
+    .registered-table-card {
+        background: #ffffff;
+        border: 1px solid #e4eaf2;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .registered-table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px 16px;
+        background: #f8faff;
+        border-bottom: 1px solid #e4eaf2;
+    }
+
+    .registered-table-header h5 {
+        color: #0b2545;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .registered-table-header span {
+        color: #718096;
+        font-size: 12px;
+    }
+
+    .registered-table {
+        margin-bottom: 0;
+        vertical-align: middle;
+        font-size: 12px;
+    }
+
+    .registered-table thead th {
+        padding: 12px 10px;
+        background: #f1f5fa;
+        color: #405570;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        white-space: nowrap;
+        border-bottom: 1px solid #e1e8f0;
+    }
+
+    .registered-table tbody td {
+        padding: 11px 10px;
+        color: #405570;
+        border-color: #edf1f6;
+    }
+
+    .registered-table tbody tr:hover {
+        background: #f8faff;
+    }
+
+    .registered-document-id {
+        color: #1677f9;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .registered-document-title {
+        color: #19365d;
+        font-weight: 600;
+        min-width: 120px;
+    }
+
+    .registered-version {
+        display: inline-block;
+        padding: 4px 8px;
+        color: #4056a1;
+        background: #eef1ff;
+        border-radius: 5px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .registered-hash {
+        display: block;
+        max-width: 180px;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        color: #64748b;
+        font-family: Consolas, monospace;
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    .registered-block {
+        color: #19365d;
+        font-weight: 600;
+    }
+
+    .registered-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 8px;
+        color: #187744;
+        background: #e8f7ee;
+        border-radius: 5px;
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .registered-view-btn {
+        padding: 6px 10px;
+        color: #ffffff;
+        background: #1677f9;
+        border: 1px solid #1677f9;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .registered-view-btn:hover {
+        color: #ffffff;
+        background: #0d62d6;
+        border-color: #0d62d6;
+    }
+
+    .registered-empty {
+        padding: 40px 20px;
+        text-align: center;
+    }
+
+    .registered-empty-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 58px;
+        height: 58px;
+        margin: 0 auto 14px;
+        color: #1677f9;
+        background: #edf4ff;
+        border-radius: 50%;
+        font-size: 23px;
+    }
+
+    .registered-empty h5 {
+        color: #0b2545;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .registered-empty p {
+        max-width: 450px;
+        margin: 0 auto 16px;
+        color: #718096;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    @media (max-width: 576px) {
+        .registered-title {
+            font-size: 20px;
+        }
+
+        .registered-header .btn {
+            width: 100%;
+        }
+
+        .registered-table-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="container-fluid registered-page">
+
+```
+<!-- Page Heading -->
+<div class="registered-header">
+    <div>
+        <h2 class="registered-title">
+            <i class="fas fa-link me-2"></i>
+            Blockchain Registered Documents
+        </h2>
+
+        <p class="registered-subtitle">
+            View document versions successfully registered on the blockchain,
+            including their hashes and transaction details.
+        </p>
+    </div>
+
+    <a href="{% url 'issuer_dashboard' %}"
+       class="btn btn-outline-secondary btn-sm">
+        <i class="fas fa-arrow-left me-2"></i>
+        Back to Dashboard
+    </a>
+</div>
+
+<!-- Summary -->
+<div class="registered-summary">
+    <div class="registered-summary-icon">
+        <i class="fas fa-file-circle-check"></i>
+    </div>
+
+    <div>
+        <div class="registered-count">{{ documents|length }}</div>
+        <div class="registered-count-label">
+            Blockchain Registered Records
+        </div>
+    </div>
+</div>
+
+<!-- Records Table -->
+<div class="registered-table-card">
+
+    <div class="registered-table-header">
+        <h5>
+            <i class="fas fa-database me-2"></i>
+            Registration Records
+        </h5>
+
+        <span>
+            <i class="fas fa-shield-alt me-1"></i>
+            Blockchain Transaction Information
+        </span>
+    </div>
+
+    {% if documents %}
+
+    <div class="table-responsive">
+        <table class="table registered-table">
+
+            <thead>
+                <tr>
+                    <th>Document ID</th>
+                    <th>Document Title</th>
+                    <th>Version</th>
+                    <th>SHA-256 Hash</th>
+                    <th>Transaction Hash</th>
+                    <th>Block Number</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in documents %}
+
+                <tr>
+                    <td>
+                        <span class="registered-document-id">
+                            {{ item.document.document_id }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="registered-document-title">
+                            {{ item.document.title }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="registered-version">
+                            V{{ item.blockchain_record.document_version.version_number }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="registered-hash"
+                              title="{{ item.blockchain_record.document_hash }}">
+                            {{ item.blockchain_record.document_hash }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="registered-hash"
+                              title="{{ item.blockchain_record.transaction_hash }}">
+                            {{ item.blockchain_record.transaction_hash|default:"—" }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="registered-block">
+                            {{ item.blockchain_record.block_number|default:"—" }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {% if item.blockchain_record.status == 'CONFIRMED' %}
+                            <span class="registered-status">
+                                <i class="fas fa-check-circle"></i>
+                                Confirmed
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary">
+                                {{ item.blockchain_record.get_status_display|default:item.blockchain_record.status }}
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a href="{% url 'document_detail' item.document.document_id %}"
+                           class="btn registered-view-btn">
+                            <i class="fas fa-eye me-1"></i>
+                            View
+                        </a>
+                    </td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+    {% else %}
+
+    <!-- Empty State -->
+    <div class="registered-empty">
+
+        <div class="registered-empty-icon">
+            <i class="fas fa-link"></i>
+        </div>
+
+        <h5>No Registered Documents Found</h5>
+
+        <p>
+            No confirmed blockchain records are available for your documents.
+            Register a document version and wait for blockchain confirmation
+            to see its transaction details here.
+        </p>
+
+        <a href="{% url 'document_list' %}"
+           class="btn btn-primary btn-sm">
+            <i class="fas fa-file-alt me-2"></i>
+            View My Documents
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+</div>
+
+{% endblock %}

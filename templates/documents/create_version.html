@@ -1,0 +1,376 @@
+
+{% extends 'dashboard.html' %}
+
+{% block content %}
+
+<style>
+    .version-page {
+        max-width: 850px;
+        margin: 20px auto 40px;
+        color: #19365d;
+    }
+
+    .version-header {
+        margin-bottom: 24px;
+    }
+
+    .version-header h2 {
+        color: #0b2545;
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .version-header p {
+        color: #718096;
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .version-card {
+        background: #ffffff;
+        border: 1px solid #e4ebf3;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 5px 22px rgba(11, 37, 69, 0.06);
+    }
+
+    .version-card-header {
+        background: #0b2545;
+        color: #ffffff;
+        padding: 21px 25px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .version-header-icon {
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+        font-size: 20px;
+    }
+
+    .version-card-header h4 {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0 0 5px;
+    }
+
+    .version-card-header p {
+        font-size: 12px;
+        color: #d4e2f5;
+        margin: 0;
+    }
+
+    .version-card-body {
+        padding: 28px;
+    }
+
+    .document-info {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 17px;
+        background: #f5f8fc;
+        border: 1px solid #e5edf6;
+        border-radius: 10px;
+        margin-bottom: 26px;
+    }
+
+    .document-info-icon {
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #e5efff;
+        color: #1677f9;
+        border-radius: 9px;
+        font-size: 18px;
+    }
+
+    .document-info-label {
+        color: #718096;
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+
+    .document-info-value {
+        color: #0b2545;
+        font-size: 15px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    .form-section-title {
+        color: #0b2545;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .form-section-description {
+        color: #718096;
+        font-size: 13px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+
+    .upload-label {
+        display: block;
+        color: #19365d;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 9px;
+    }
+
+    .version-file-input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #d7e1ed;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #52657d;
+        font-size: 13px;
+    }
+
+    .version-file-input:focus {
+        border-color: #1677f9;
+        box-shadow: 0 0 0 3px rgba(22, 119, 249, 0.1);
+        outline: none;
+    }
+
+    .upload-help {
+        display: block;
+        color: #8492a6;
+        font-size: 12px;
+        margin-top: 9px;
+        line-height: 1.6;
+    }
+
+    .version-notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        padding: 14px 16px;
+        margin-top: 22px;
+        background: #eef6ff;
+        border: 1px solid #d9eaff;
+        border-radius: 9px;
+    }
+
+    .version-notice i {
+        color: #1677f9;
+        margin-top: 2px;
+    }
+
+    .version-notice p {
+        color: #526b89;
+        font-size: 12px;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    .version-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 27px;
+        padding-top: 22px;
+        border-top: 1px solid #edf1f6;
+    }
+
+    .version-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 11px 18px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .version-btn-primary {
+        background: #1677f9;
+        border: 1px solid #1677f9;
+        color: #ffffff;
+    }
+
+    .version-btn-primary:hover {
+        background: #0d63d5;
+        border-color: #0d63d5;
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+
+    .version-btn-secondary {
+        background: #ffffff;
+        border: 1px solid #d7e1ed;
+        color: #52657d;
+    }
+
+    .version-btn-secondary:hover {
+        background: #f5f8fc;
+        color: #0b2545;
+    }
+
+    @media (max-width: 576px) {
+        .version-page {
+            margin-top: 10px;
+        }
+
+        .version-header h2 {
+            font-size: 22px;
+        }
+
+        .version-card-body {
+            padding: 19px;
+        }
+
+        .version-card-header {
+            padding: 18px;
+        }
+
+        .version-actions {
+            flex-direction: column-reverse;
+        }
+
+        .version-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="version-page">
+
+        <!-- Page Heading -->
+        <div class="version-header">
+            <h2>
+                <i class="fas fa-code-branch me-2"></i>
+                Create New Version
+            </h2>
+
+            <p>
+                Upload an updated document while maintaining its version history.
+            </p>
+        </div>
+
+        <!-- Version Card -->
+        <div class="version-card">
+
+            <div class="version-card-header">
+                <div class="version-header-icon">
+                    <i class="fas fa-file-circle-plus"></i>
+                </div>
+
+                <div>
+                    <h4>Document Version Management</h4>
+                    <p>Upload a revised file for an existing document.</p>
+                </div>
+            </div>
+
+            <div class="version-card-body">
+
+                <!-- Document Information -->
+                <div class="document-info">
+                    <div class="document-info-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+
+                    <div>
+                        <div class="document-info-label">
+                            Document ID
+                        </div>
+
+                        <div class="document-info-value">
+                            {{ document.document_id }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Form -->
+                <div>
+                    <h5 class="form-section-title">
+                        Upload Updated Document
+                    </h5>
+
+                    <p class="form-section-description">
+                        Select the revised certificate or document file.
+                        The uploaded file will be used to create a new version
+                        of this document.
+                    </p>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="version_file" class="upload-label">
+                                Select Document File
+                                <span class="text-danger">*</span>
+                            </label>
+
+                            <input
+                                type="file"
+                                name="file"
+                                id="version_file"
+                                class="form-control version-file-input"
+                                required
+                            >
+
+                            <small class="upload-help">
+                                Choose the updated file from your device.
+                                Make sure you select the correct document before submitting.
+                            </small>
+                        </div>
+
+                        <!-- Information Notice -->
+                        <div class="version-notice">
+                            <i class="fas fa-info-circle"></i>
+
+                            <p>
+                                <strong>Important:</strong>
+                                An updated file may have a different SHA-256 hash.
+                                Ensure the new version is registered on the blockchain
+                                through your application's supported workflow before
+                                treating it as blockchain-verified.
+                            </p>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="version-actions">
+                            <a href="{% url 'document_list' %}"
+                               class="version-btn version-btn-secondary">
+                                <i class="fas fa-arrow-left"></i>
+                                Cancel
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="version-btn version-btn-primary">
+                                <i class="fas fa-code-branch"></i>
+                                Create New Version
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
