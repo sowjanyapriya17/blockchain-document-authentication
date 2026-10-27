@@ -1,182 +1,203 @@
-import json
-from pathlib import Path
+import hashlib
 
-from web3 import Web3
-from django.conf import settings
+from django.db import transaction
 
-
-BASE_DIR = Path(settings.BASE_DIR)
-
-CONTRACT_DATA_PATH = (
-    BASE_DIR / 'blockchain' / 'contract_data.json'
-)
-CONTRACT_ADDRESS_PATH = (
-    BASE_DIR / 'blockchain' / 'contract_address.txt'
-)
+from .models import LedgerEntry
 
 
-with open(
-    CONTRACT_DATA_PATH,
-    'r',
-    encoding='utf-8'
-) as file:
-    CONTRACT_DATA = json.load(file)
+GENESIS_HASH = "0" * 64
 
 
-ABI = CONTRACT_DATA['abi']
-BYTECODE = CONTRACT_DATA['bytecode']
+def calculate_entry_hash(
+    document_id,
+    version,
+    document_hash,
+    previous_hash,
+):
+    """
+    Calculate the hash of a ledger entry.
+    Each entry includes the previous entry's hash.
+    """
 
-
-from web3 import Web3
-
-GANACHE_URL = "http://127.0.0.1:7545"
-
-_web3 = None
-
-
-def get_web3():
-    global _web3
-
-    if _web3 is None:
-        _web3 = Web3( Web3.HTTPProvider(GANACHE_URL))
-
-    if not _web3.is_connected():
-        raise ConnectionError(
-            "Cannot connect to Ganache. "
-            "Please make sure Ganache is running."
-        )
-
-    return _web3
-
-
-def get_account():
-    web3 = get_web3()
-    return web3.eth.accounts[0]
-
-_contract = None
-
-def deploy_contract(web3, account):
-    global _contract
-
-    # Reuse the contract if already loaded
-    if _contract is not None:
-        return _contract
-
-    # Check whether the contract address was saved
-    if CONTRACT_ADDRESS_PATH.exists():
-
-        address = CONTRACT_ADDRESS_PATH.read_text(
-            encoding='utf-8'
-        ).strip()
-
-        if address:
-
-            address = Web3.to_checksum_address(address)
-
-            code = web3.eth.get_code(address)
-
-            if code and code != b'':
-
-                _contract = web3.eth.contract(
-                    address=address,
-                    abi=ABI
-                )
-
-                return _contract
-
-    # Deploy a new contract if no existing contract is available
-    contract_factory = web3.eth.contract(
-        abi=ABI,
-        bytecode=BYTECODE
+    entry_data = (
+        f"{document_id}|"
+        f"{version}|"
+        f"{document_hash}|"
+        f"{previous_hash}"
     )
 
-    transaction_hash = contract_factory.constructor().transact({
-        'from': account
-    })
-
-    receipt = web3.eth.wait_for_transaction_receipt(
-        transaction_hash
-    )
-
-    if receipt['status'] != 1:
-        raise Exception('Contract deployment failed.')
-
-    address = receipt['contractAddress']
-
-    _contract = web3.eth.contract(
-        address=address,
-        abi=ABI
-    )
-
-    # Save the contract address
-    CONTRACT_ADDRESS_PATH.write_text(
-        address,
-        encoding='utf-8'
-    )
-
-    print('Smart contract deployed:', address)
-
-    return _contract
+    return hashlib.sha256(
+        entry_data.encode("utf-8")
+    ).hexdigest()
 
 
+def validate_document_hash(document_hash):
+    """
+    Ensure the document hash is a valid SHA-256 hash.
+    """
 
-def register_document(document_id, document_hash, version):
-    web3 = get_web3()
-    account = get_account()
+    if not isinstance(document_hash, str):
+        raise ValueError("Document hash must be a string.")
 
-    # Deploy the smart contract
-    contract = deploy_contract(web3, account)
-
-    # Convert SHA-256 hash into bytes
-    hash_bytes = bytes.fromhex(document_hash)
+    try:
+        hash_bytes = bytes.fromhex(document_hash)
+    except ValueError:
+        raise ValueError("Document hash must be hexadecimal.")
 
     if len(hash_bytes) != 32:
-        raise ValueError("Document hash must be exactly 32 bytes.")
+        raise ValueError(
+            "Document hash must be exactly 32 bytes."
+        )
 
-    # Register document on the blockchain
-    transaction_hash = contract.functions.registerDocument(
-        str(document_id),
-        hash_bytes,
-        int(version)
-    ).transact({
-        "from": account
-    })
+    return document_hash.lower()
 
-    # Get transaction receipt
-    receipt = web3.eth.wait_for_transaction_receipt(
-        transaction_hash
+
+def verify_ledger_integrity():
+    """
+    Verify the previous-hash links and entry hashes
+    throughout the entire local ledger.
+    """
+
+    previous_hash = GENESIS_HASH
+
+    entries = LedgerEntry.objects.order_by("id")
+
+    for entry in entries:
+
+        # Each entry must point to the preceding entry.
+        if entry.previous_entry_hash != previous_hash:
+            return False
+
+        # Recalculate the entry's hash.
+        expected_hash = calculate_entry_hash(
+            entry.document_id,
+            entry.version_number,
+            entry.document_hash,
+            entry.previous_entry_hash,
+        )
+
+        if entry.entry_hash != expected_hash:
+            return False
+
+        previous_hash = entry.entry_hash
+
+    return True
+
+
+@transaction.atomic
+def register_document(document_id, document_hash, version):
+    """
+    Register a document version in the local hash-chain ledger.
+    No Ganache or external blockchain connection is required.
+    """
+
+    document_id = str(document_id)
+    document_hash = validate_document_hash(document_hash)
+    version = int(version)
+
+    if version < 1:
+        raise ValueError("Version must be at least 1.")
+
+    # Refuse to add records to an already inconsistent ledger.
+    if not verify_ledger_integrity():
+        raise ValueError(
+            "Ledger integrity check failed. "
+            "Registration has been stopped."
+        )
+
+    # Prevent duplicate registration of the same version.
+    existing_entry = LedgerEntry.objects.filter(
+        document_id=document_id,
+        version_number=version,
+    ).first()
+
+    if existing_entry:
+
+        if existing_entry.document_hash != document_hash:
+            raise ValueError(
+                "This document version is already registered "
+                "with a different hash."
+            )
+
+        return {
+            "transaction_hash": existing_entry.entry_hash,
+            "block_number": existing_entry.id,
+            "status": 1,
+            "gas_used": 0,
+            "contract_address": "LOCAL_HASH_CHAIN",
+        }
+
+    # Link the new entry to the latest ledger entry.
+    previous_entry = (
+        LedgerEntry.objects.order_by("-id").first()
     )
 
-    if receipt["status"] != 1:
-        raise Exception("Document registration transaction failed.")
+    previous_hash = (
+        previous_entry.entry_hash
+        if previous_entry
+        else GENESIS_HASH
+    )
+
+    entry_hash = calculate_entry_hash(
+        document_id,
+        version,
+        document_hash,
+        previous_hash,
+    )
+
+    entry = LedgerEntry.objects.create(
+        document_id=document_id,
+        version_number=version,
+        document_hash=document_hash,
+        previous_entry_hash=previous_hash,
+        entry_hash=entry_hash,
+    )
 
     return {
-        "transaction_hash": receipt["transactionHash"].hex(),
-        "block_number": receipt["blockNumber"],
-        "status": receipt["status"],
-        "gas_used": receipt["gasUsed"],
-        "contract_address": contract.address
+        "transaction_hash": entry.entry_hash,
+        "block_number": entry.id,
+        "status": 1,
+        "gas_used": 0,
+        "contract_address": "LOCAL_HASH_CHAIN",
     }
 
 
 def verify_document(document_id, document_hash, version):
-    web3 = get_web3()
-    account = get_account()
+    """
+    Verify a document version against the local ledger.
+    Also checks the integrity of the complete ledger.
+    """
 
-    # Get the deployed contract
-    contract = deploy_contract(web3, account)
+    document_id = str(document_id)
+    document_hash = validate_document_hash(document_hash)
+    version = int(version)
 
-    # Convert SHA-256 hash into bytes
-    hash_bytes = bytes.fromhex(document_hash)
+    if version < 1:
+        return False
 
-    if len(hash_bytes) != 32:
-        raise ValueError("Document hash must be exactly 32 bytes.")
+    # Check the entire hash chain first.
+    if not verify_ledger_integrity():
+        return False
 
-    # Verify the document using the smart contract
-    result = contract.functions.verifyDocument(
-        str(document_id),
-        hash_bytes,
-        int(version)
-    ).call()
+    # Find the registered document version.
+    entry = LedgerEntry.objects.filter(
+        document_id=document_id,
+        version_number=version,
+    ).first()
 
-    return result
+    if entry is None:
+        return False
+
+    # Compare the uploaded/current version hash.
+    if entry.document_hash != document_hash:
+        return False
+
+    # Confirm the selected entry's hash independently.
+    expected_hash = calculate_entry_hash(
+        entry.document_id,
+        entry.version_number,
+        entry.document_hash,
+        entry.previous_entry_hash,
+    )
+
+    return entry.entry_hash == expected_hash

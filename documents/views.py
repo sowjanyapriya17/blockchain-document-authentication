@@ -7,12 +7,11 @@ from .models import Document, DocumentVersion
 from accounts.decorators import role_required
 from .models import Document
 
-
+from django.utils import timezone
 from django.contrib import messages
-
-from blockchain.services import register_document
+from blockchain.services import register_document, verify_document
 from django.db.models import Count
-from blockchain.models import BlockchainRecord
+from blockchain.models import BlockchainRecord,LedgerEntry
 
 from audit.services import create_audit_log
 from verification.qr_service import generate_qr
@@ -132,8 +131,6 @@ def document_detail(request, document_id):
         }
     )
 
-
-
 @role_required('ISSUER')
 @require_POST
 def register_on_blockchain(request, document_id):
@@ -154,67 +151,107 @@ def register_on_blockchain(request, document_id):
                 "No current document version found."
             )
 
-        existing_record = BlockchainRecord.objects.filter(
-            document=document,
-            document_version=version,
-            status='CONFIRMED'
+        existing_entry = LedgerEntry.objects.filter(
+            document_id=str(document.document_id),
+            version_number=version.version_number
         ).first()
 
-        if existing_record:
-            messages.info(
-                request,
-                "This document version is already registered."
-            )
+        if existing_entry:
+
+            if existing_entry.document_hash != version.document_hash:
+                raise ValueError(
+                    "The ledger hash does not match the current "
+                    "document version."
+                )
+
+            if not verify_document(
+                str(document.document_id),
+                version.document_hash,
+                version.version_number
+            ):
+                raise ValueError(
+                    "The local ledger entry could not be verified."
+                )
+
+            transaction_hash = existing_entry.entry_hash
+            block_number = existing_entry.id
 
         else:
             transaction_data = register_document(
-                document.document_id,
+                str(document.document_id),
                 version.document_hash,
                 version.version_number
             )
 
-            BlockchainRecord.objects.create(
+            transaction_hash = transaction_data['transaction_hash']
+            block_number = transaction_data['block_number']
+
+        blockchain_record, created = (
+            BlockchainRecord.objects.get_or_create(
                 document=document,
                 document_version=version,
-                document_hash=version.document_hash,
-                transaction_hash=transaction_data[
-                    'transaction_hash'
-                ],
-                block_number=transaction_data['block_number'],
-                status='CONFIRMED'
+                defaults={
+                    'document_hash': version.document_hash,
+                    'transaction_hash': transaction_hash,
+                    'block_number': block_number,
+                    'status': 'CONFIRMED',
+                    'blockchain_timestamp': timezone.now(),
+                }
             )
+        )
 
-            # Record successful blockchain registration
-            create_audit_log(
-                user=request.user,
-                document=document,
-                action='BLOCKCHAIN',
-                description=(
-                    f"Document {document.document_id}, "
-                    f"version {version.version_number}, "
-                    f"registered on blockchain. "
-                    f"Transaction: "
-                    f"{transaction_data['transaction_hash']}"
+        if not created:
+
+            if blockchain_record.document_hash != version.document_hash:
+                raise ValueError(
+                    "The existing registration record has a "
+                    "different document hash."
                 )
+
+            blockchain_record.transaction_hash = transaction_hash
+            blockchain_record.block_number = block_number
+            blockchain_record.status = 'CONFIRMED'
+
+            if blockchain_record.blockchain_timestamp is None:
+                blockchain_record.blockchain_timestamp = timezone.now()
+
+            blockchain_record.save(
+                update_fields=[
+                    'transaction_hash',
+                    'block_number',
+                    'status',
+                    'blockchain_timestamp',
+                ]
             )
 
-            messages.success(
-                request,
-                "Document registered successfully!"
+        create_audit_log(
+            user=request.user,
+            document=document,
+            action='BLOCKCHAIN',
+            description=(
+                f"Document {document.document_id}, "
+                f"version {version.version_number}, "
+                f"registered or synchronized with the local "
+                f"integrity ledger. Entry hash: {transaction_hash}"
             )
+        )
+
+        messages.success(
+            request,
+            "Document version registration record is confirmed "
+            "and synchronized with the local integrity ledger."
+        )
 
     except Exception as error:
 
-        # Record the failure without using an undefined variable
         try:
             create_audit_log(
                 user=request.user,
                 document=document,
                 action='BLOCKCHAIN',
                 description=(
-                    f"Blockchain registration failed for "
-                    f"document {document.document_id}: "
-                    f"{error}"
+                    f"Local ledger registration failed for "
+                    f"document {document.document_id}: {error}"
                 )
             )
         except Exception:
@@ -222,14 +259,15 @@ def register_on_blockchain(request, document_id):
 
         messages.error(
             request,
-            f"Blockchain registration failed: {error}"
+            f"Local ledger registration failed: {error}"
         )
 
     return redirect(
         'document_detail',
         document_id=document.document_id
     )
-    
+
+
     
 @role_required('ISSUER')
 def create_version(
