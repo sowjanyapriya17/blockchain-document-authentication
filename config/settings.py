@@ -22,9 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get(
-    "qTkV8g0LLo-GIqQa9g_6-eg-GKgrCdosxwqjzlzwfNBD9eIRopKuh2bRCslBJjURqFM",
-    "django-insecure-local-development-only"
+"DJANGO_SECRET_KEY",
+"django-insecure-local-development-only"
 )
+
 
 # Debug mode
 DEBUG = os.environ.get("DEBUG", "True").lower() == "true"
@@ -35,7 +36,7 @@ DEBUG = os.environ.get("DEBUG", "True").lower() == "true"
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    "your-service-name.onrender.com"
+    ".onrender.com"
 ]
 
 
@@ -57,10 +58,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
-    "django.middleware.security.SecurityMiddleware",
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
