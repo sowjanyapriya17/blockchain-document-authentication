@@ -5,7 +5,6 @@ from .forms import DocumentForm
 from .services import generate_document_hash
 from .models import Document, DocumentVersion
 from accounts.decorators import role_required
-from .models import Document
 
 from django.utils import timezone
 from django.contrib import messages
@@ -178,11 +177,11 @@ def register_on_blockchain(request, document_id):
 
         else:
             transaction_data = register_document(
-                str(document.document_id),
-                version.document_hash,
-                version.version_number
-            )
-
+                document_id=str(document.document_id),
+                document_hash=version.document_hash,
+                version=version.version_number,
+                issuer=request.user
+)
             transaction_hash = transaction_data['transaction_hash']
             block_number = transaction_data['block_number']
 

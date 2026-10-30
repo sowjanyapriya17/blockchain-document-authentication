@@ -52,12 +52,21 @@ class BlockchainRecord(models.Model):
 
         return self.document.document_id
     
-
-
+    
 class LedgerEntry(models.Model):
+
     document_id = models.CharField(max_length=50)
+
     version_number = models.PositiveIntegerField()
+
     document_hash = models.CharField(max_length=64)
+
+    issuer = models.ForeignKey(
+        'auth.User',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True
+    )
 
     previous_entry_hash = models.CharField(
         max_length=64,
@@ -69,10 +78,14 @@ class LedgerEntry(models.Model):
         unique=True
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
 
     class Meta:
+
         ordering = ["id"]
+
         constraints = [
             models.UniqueConstraint(
                 fields=["document_id", "version_number"],
@@ -81,7 +94,9 @@ class LedgerEntry(models.Model):
         ]
 
     def __str__(self):
+
         return (
             f"{self.document_id} - "
             f"Version {self.version_number}"
         )
+
